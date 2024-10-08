@@ -103,6 +103,7 @@ Pada tahap ini, saya akan mengembangkan model machine learning dengan tiga algor
 1. K-Nearest Neighbor
 2. Random Forest
 3. Boosting Algorithm
+
    **Rubrik/Kriteria Tambahan (Opsional)**:
    **Jelaskan proses improvement yang dilakukan**.
    **Jelaskan mengapa memilih model tersebut sebagai model terbaik**.
@@ -116,6 +117,9 @@ Pada tahap ini, saya akan mengembangkan model machine learning dengan tiga algor
 - 1. Saya melakukan scalling antara data uji dan data latih
   2. Selanjutnya di evaluasi menggunakan metriks MSE
   3. Berdasarkan evaluasinya, didapatkan nilai
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="Cuplikan layar 2024-10-08 213620.png">
+  </picture>
 
 **Rubrik/Kriteria Tambahan (Opsional)**
 
