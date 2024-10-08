@@ -24,17 +24,9 @@ Saat ini prediksi cuaca masih menjadi komoditas yang cukup menarik untuk didapat
 Proyek ini memiliki beberapa tujuan utama yang ingin dicapai, antara lain:
 
 1. Mengidentifikasi faktor-faktor utama yang mempengaruhi tipe cuaca
-   Menentukan variabel cuaca mana yang paling berpengaruh terhadap jenis cuaca
 2. Membangun model prediksi cuaca yang akurat dengan mengembangkan model machine learning untuk memprediksi tipe cuaca berdasarkan data historis dengan menggunakan teknik klasifikasi yang tepat
 
 **Rubrik/Kriteria Tambahan (Opsional)**:
-
-- Menambahkan bagian “Solution Statement” yang menguraikan cara untuk meraih goals. Bagian ini dibuat dengan ketentuan sebagai berikut:
-
-  ### Solution statements
-
-  - Mengajukan 2 atau lebih solution statement. Misalnya, menggunakan dua atau lebih algoritma untuk mencapai solusi yang diinginkan atau melakukan improvement pada baseline model dengan hyperparameter tuning.
-  - Solusi yang diberikan harus dapat terukur dengan metrik evaluasi.
 
 ## Data Understanding
 
@@ -118,27 +110,30 @@ Pada tahap ini, saya akan mengembangkan model machine learning dengan tiga algor
   2. Selanjutnya di evaluasi menggunakan metriks MSE
   3. Berdasarkan evaluasinya, didapatkan nilai
 
-
-      <picture>
-       <img alt="evaluasi" src="https://github.com/bayunk59/Predictive-Analytics/blob/8eb482327e481fc83ff1fc07a5a6c7b403bc54f8/Cuplikan%20layar%202024-10-08%20213620.png">
-      </picture>
+  <picture>
+   <img alt="evaluasi" src="https://github.com/bayunk59/Predictive-Analytics/blob/8eb482327e481fc83ff1fc07a5a6c7b403bc54f8/Cuplikan%20layar%202024-10-08%20213620.png">
+  </picture>
 
   4. kita plot metrik nilai tersebut dengan bar chart
 
-
-      <picture>
-       <img alt="plot" src="https://github.com/bayunk59/Predictive-Analytics/blob/8eb482327e481fc83ff1fc07a5a6c7b403bc54f8/Cuplikan%20layar%202024-10-08%20213620.png">
-      </picture>
+  <picture>
+   <img alt="plot" src="https://github.com/bayunk59/Predictive-Analytics/blob/3084490391ff56206ed036d9be5678ce7ebc4002/Cuplikan%20layar%202024-10-08%20214355.png">
+  </picture>
 
   5. Cek Akurasinya
      <picture>
-     <img alt="akurasi" src="https://github.com/bayunk59/Predictive-Analytics/blob/8eb482327e481fc83ff1fc07a5a6c7b403bc54f8/Cuplikan%20layar%202024-10-08%20213620.png">
+     <img alt="akurasi" src="https://github.com/bayunk59/Predictive-Analytics/blob/3084490391ff56206ed036d9be5678ce7ebc4002/Cuplikan%20layar%202024-10-08%20214416.png">
      </picture>
 
   6. Cek permodelannya
      <picture>
-     <img alt="model" src="https://github.com/bayunk59/Predictive-Analytics/blob/8eb482327e481fc83ff1fc07a5a6c7b403bc54f8/Cuplikan%20layar%202024-10-08%20213620.png">
+     <img alt="model" src="https://github.com/bayunk59/Predictive-Analytics/blob/3084490391ff56206ed036d9be5678ce7ebc4002/Cuplikan%20layar%202024-10-08%20214434.png">
      </picture>
+
+  Berdasarkan evaluasi dan modellingnya didapatkan kesimpulan:
+
+  1. Fitur yang mempunyai korelasi tertinggi dengaan Weather Type adalah fitur UV Index
+  2. Model terbaik yang muncul adalah Random Forest dengan nilai akurasi sebesar 88,64%
      **Rubrik/Kriteria Tambahan (Opsional)**
 
 **---Ini adalah bagian akhir laporan---**
