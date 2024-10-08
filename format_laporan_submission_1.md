@@ -117,9 +117,9 @@ Pada tahap ini, saya akan mengembangkan model machine learning dengan tiga algor
 - 1. Saya melakukan scalling antara data uji dan data latih
   2. Selanjutnya di evaluasi menggunakan metriks MSE
   3. Berdasarkan evaluasinya, didapatkan nilai
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="Cuplikan layar 2024-10-08 213620.png">
-  </picture>
+     <picture>
+     <img alt="evaluasi" src="https://github.com/bayunk59/Predictive-Analytics/blob/8eb482327e481fc83ff1fc07a5a6c7b403bc54f8/Cuplikan%20layar%202024-10-08%20213620.png">
+     </picture>
 
 **Rubrik/Kriteria Tambahan (Opsional)**
 
