@@ -38,6 +38,8 @@ cuaca.head()
 
 cuaca.info()
 
+"""## Mengubah Type data"""
+
 # ubah data Weather Type menjadi numerik
 from sklearn.preprocessing import LabelEncoder
 
@@ -82,6 +84,11 @@ for column in cuaca.select_dtypes(include=np.number).columns:
   upper_bound = Q3 + 1.5 * IQR
   outlier_count = len(cuaca[(cuaca[column] < lower_bound) | (cuaca[column] > upper_bound)])
   print(f"Jumlah outlier di kolom '{column}': {outlier_count}")
+
+"""Berdasarkan jumlah outlier, jika dijumlahkan datanya ada 1806 atau 13,6% dari total 13200 data.
+jika dihapus akan mengurangi data lumayan banyak.
+Saya mengganti nilai di kolom tertentu yang berada di luar batas atas dan bawah dengan nilai median kolom tersebut agar tidak menghilangkan niali outliernya dan tidak membuang data
+"""
 
 import numpy as np
 
@@ -152,6 +159,14 @@ for col in cat_features:
   sns.catplot(x=col, y="Weather Type", kind="bar", dodge=False, height = 4, aspect = 3,  data=cuaca, palette="Set3")
   plt.title("Rata-rata 'Type Cuaca' Relatif terhadap - {}".format(col))
 
+"""berdasarkan data grafik di atas:
+1. Pada fitur 'Cloud Cover', ada perbedaan signifikan pada kategori clear yang menandakan adanya hubungan antara 'Cloud Cover' dengan 'Weather Type'
+2. Pada fitur 'Season', rata-rata Tipe cuaca yang muncul hampir sama di kisaran 1,2 - 1,6 menandakan hubungan 'Season' dengan 'Weather Type' rendah
+3. Pada fitur 'Location', rata-rata Tipe cuaca yang juga hampir mirip. Ini juga menandakan rendahnya hubungan antara fitur 'Location' dan 'Weather Type'
+
+
+"""
+
 # Ubah menjadi numerik
 cuaca1 = cuaca.copy() # buat kopian data agar data asli tidak berubah
 le = LabelEncoder()
@@ -159,6 +174,8 @@ for feature in ['Cloud Cover', 'Season', 'Location']:
   cuaca1[feature] = le.fit_transform(cuaca[feature])
 
 cuaca1.head()
+
+"""Untuk melihat hubungan fitur kategori dengan Weather Type terutama pada fitur 'Cloud COver', saya ubah menjadi data numerik dan melihat korelasinya"""
 
 # Mengetahui skor korelasi
 plt.figure(figsize=(10, 8))
@@ -169,7 +186,7 @@ sns.heatmap(data=correlation_matrix, annot=True, cmap='coolwarm', linewidths=0.5
 plt.title("Correlation Matrix untuk Fitur kategorik", size=20)
 plt.tight_layout()
 
-"""Dari hasil tersebut Cloud Cover memiliki korelasi tertinggi dengan Weather Type tetapi nilainya negatif
+"""Dari hasil cek korelasi di atas benar prediksi daya jika Cloud Cover memiliki korelasi -0,54 dengan Weather Type. Karena bernilai negatif, ini menandakan bahwa semakin tinggi tingkat awan (mendung), semakin buruk jenis cuaca yang diprediksi, dan sebaliknya. Hubungan ini berkebalikan dengan data dan akan kita abaikan
 
 ### Numerical Features
 """
@@ -188,7 +205,7 @@ plt.tight_layout()
 
 """Berdasarkan nilai korelasi di atas
 - UV index menjadi fitur yang paling mempengaruhi Tipe Cuaca
-- Temperature dan Visibilty dalah fitur yang tidak mempunya korelasi denga tipe cuaca dan akan di hapus
+- Temperature dan Visibilty adalah fitur yang tidak mempunya korelasi dengan tipe cuaca dan akan di hapus
 """
 
 # Ada beberapa yang tidak memilik korelasi dengan Weather Type, maka kita hilangkan saja
@@ -199,20 +216,25 @@ cuaca.info()
 
 """# Data Preparation
 
-## Encoding Fitur Kategori
+## Encoding FItur Kategori
+
+Ubah data kategori menjadi numerik dengan teknik one-hot encoding
 """
 
-# Mengubah kategori menjadi numerik
 from sklearn.preprocessing import  OneHotEncoder
 cuaca = pd.concat([cuaca, pd.get_dummies(cuaca['Cloud Cover'], prefix='Cloud Cover')],axis=1)
-cuaca = pd.concat([cuaca, pd.get_dummies(cuaca['Location'], prefix='Location')],axis=1)
 cuaca = pd.concat([cuaca, pd.get_dummies(cuaca['Season'], prefix='Season')],axis=1)
-cuaca.drop(['Cloud Cover', 'Location', 'Season'], axis=1, inplace=True)
+cuaca = pd.concat([cuaca, pd.get_dummies(cuaca['Location'], prefix='Location')],axis=1)
+cuaca.drop(['Cloud Cover','Season','Location'], axis=1, inplace=True)
 cuaca.head()
 
-"""## Train-Test-Split"""
+"""## Train-Test-Split
 
-# Membagi 90:10 (10 untuk data uji/test)
+Kita akan membagi dataset menjadi data latih (train) dan data uji (test), pada data ini saya akan membagi data menjadi 90:10.
+jika ada 13200 data seharusnya 11880 data latih dan 1320 data uji
+"""
+
+# Membagi 90:10 (10% untuk data uji/test)
 from sklearn.model_selection import train_test_split
 
 X = cuaca.drop(['Weather Type'],axis =1)
@@ -224,12 +246,15 @@ print(f'Total # of sample in whole dataset: {len(X)}')
 print(f'Total # of sample in train dataset: {len(X_train)}')
 print(f'Total # of sample in test dataset: {len(X_test)}')
 
-"""## Standarisasi"""
+"""## Standarisasi
+
+Selanjutnya akan kita standarisasi data numeriknya menggunakan teknik StandarScaler. Teknik ini mengurangkan nilai rata-rata kemudian membaginya dengan stranda deviasi untuk menggeser nilai distribusinya menjadi -1 sampai 1
+"""
 
 # Standarisasi data latih (train) dengan StandardCaler (utk numerik)
 from sklearn.preprocessing import StandardScaler
 
-numerical_features = ['Humidity', 'Wind Speed', 'Precipitation (%)', 'Atmospheric Pressure', 'UV Index']
+numerical_features = ['Humidity', 'Wind Speed', 'Precipitation (%)','Atmospheric Pressure', 'UV Index']
 scaler = StandardScaler()
 scaler.fit(X_train[numerical_features])
 X_train[numerical_features] = scaler.transform(X_train.loc[:, numerical_features])
@@ -240,12 +265,19 @@ X_train[numerical_features].describe().round(4)
 
 """# Model Deployment
 
-## Model K-Nearest Neighbor (K-NN)
+Pada tahap permodelan ini saya akan menggunakan 3 model lalu memilih yang terbaik di antaranya
+1. K-Nearest Neighbor (KNN)
+2. Random Forest (RF)
+3. Boosting Algorithm
 """
 
 # Siapkan dataframe untuk analisis model
 models = pd.DataFrame(index=['train_mse', 'test_mse'],
                       columns=['KNN', 'RandomForest', 'Boosting'])
+
+"""## Model K-Nearest Neighbor (K-NN)
+
+"""
 
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.metrics import mean_squared_error
@@ -255,7 +287,10 @@ knn.fit(X_train, y_train)
 
 models.loc['train_mse','knn'] = mean_squared_error(y_pred = knn.predict(X_train), y_true=y_train)
 
-"""## Model Random Forest"""
+"""Melatih dengan KNN
+
+## Model Random Forest
+"""
 
 # Impor library yang dibutuhkan
 from sklearn.ensemble import RandomForestRegressor
@@ -274,7 +309,10 @@ boosting = AdaBoostRegressor(learning_rate=0.05, random_state=55)
 boosting.fit(X_train, y_train)
 models.loc['train_mse','Boosting'] = mean_squared_error(y_pred=boosting.predict(X_train), y_true=y_train)
 
-"""# Evaluasi Model"""
+"""# Evaluasi Model
+
+Proses scaling fitur numerik pada data uji, hal ini dilakukan untuk menyamakan skala di data uji dengan data latih agar bisa di evaluasi
+"""
 
 # Proses Scalling
 # Lakukan scaling terhadap fitur numerik pada X_test sehingga memiliki rata-rata=0 dan varians=1
@@ -294,12 +332,18 @@ for name, model in model_dict.items():
 # Panggil mse
 mse
 
+"""Selanjutnya dilakukan evaluasi pada 3 model mengguanakan MSE (Mean Squared
+Error),
+lalu kita visualisasikan hasilnya dalam bentuk plot grafik
+"""
+
 fig, ax = plt.subplots()
 mse.sort_values(by='test', ascending=False).plot(kind='barh', ax=ax, zorder=3)
 ax.grid(zorder=0)
 plt.xticks(rotation=45)
 
 # melihat nilai akurasi dari tiap model
+from sklearn.metrics import accuracy_score
 
 # Buat dictionary untuk setiap algoritma yang digunakan
 model_dict = {'KNN': knn, 'RF': RF, 'Boosting': boosting}
@@ -312,6 +356,11 @@ for name, model in model_dict.items():
     accuracy = accuracy_score(y_test, y_pred_class)
     print(f"Akurasi {name}: {accuracy:.4f}")
 
+"""Setelah dibuat akurasinya dalam bentuk nilai, akurasi Random Forest menjadi yang terbesar dengan presentase 88,71%
+
+Selanjutnya kita uji prediksinya menggunakan beberapa nilai dalam data
+"""
+
 # Uji data
 prediksi = X_test.iloc[:1].copy()
 pred_dict = {'y_true':y_test[:1]}
@@ -320,4 +369,4 @@ for name, model in model_dict.items():
 
 pd.DataFrame(pred_dict)
 
-"""Berdasarkan nilai akurasinya, permodelan yang terbaik adalah Random Forest dengan akurasi 88,64%"""
+"""Berdasarkan nilai akurasinya dan prediksinya, permodelan yang paling mendekati dengan hasil aslinya adalah Random Forest"""
