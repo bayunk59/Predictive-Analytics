@@ -38,7 +38,20 @@ cuaca.head()
 
 cuaca.info()
 
-"""## Mengubah Type data"""
+"""- Temperature (numeric) : Temperatur suhu dalam celcius
+- Humidity (numeric) : Presentase Kelembaban
+- Wind Speed (numeric) : Kecepatan angin dalam kilometer/jam
+- Precipitation (%) (numeric) : Presentase curah hujan
+- Cloud Cover (categorical) : Deskripsi tutupan awan yang berisi clear, cloudy, overcast dan party cloudy
+- Atmospheric Pressure (numeric) : Tekanan atmosfer dalam hPa
+- UV index (numeric) : Indeks UX yang menunjukkan kekuatan radiasi UV
+- Season (categorical) : Jenis musim mulai dari Autumn, Spring, Summer dan Winter
+- Visibility (km) (numeric) : Jarak pandang dalam km
+- Location (categorical) : Lokasi dimana data di ambil seperti coastal, inland dan muntain
+- Weather Type (categorical) : Jenis cuaca yang berisi Cloudy, Rainy, Snowy dan Sunny (Target Klasifikasi)
+
+## Mengubah Type data
+"""
 
 # ubah data Weather Type menjadi numerik
 from sklearn.preprocessing import LabelEncoder
