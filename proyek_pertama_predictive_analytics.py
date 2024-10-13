@@ -31,6 +31,7 @@ files.upload()
 !kaggle datasets download -d nikhil7280/weather-type-classification
 !unzip weather-type-classification.zip
 
+# Membuat dataset bernama cuaca
 cuaca = pd.read_csv('weather_classification_data.csv')
 cuaca.head()
 
@@ -38,17 +39,35 @@ cuaca.head()
 
 cuaca.info()
 
-"""- Temperature (numeric) : Temperatur suhu dalam celcius
-- Humidity (numeric) : Presentase Kelembaban
-- Wind Speed (numeric) : Kecepatan angin dalam kilometer/jam
-- Precipitation (%) (numeric) : Presentase curah hujan
-- Cloud Cover (categorical) : Deskripsi tutupan awan yang berisi clear, cloudy, overcast dan party cloudy
-- Atmospheric Pressure (numeric) : Tekanan atmosfer dalam hPa
-- UV index (numeric) : Indeks UX yang menunjukkan kekuatan radiasi UV
-- Season (categorical) : Jenis musim mulai dari Autumn, Spring, Summer dan Winter
-- Visibility (km) (numeric) : Jarak pandang dalam km
-- Location (categorical) : Lokasi dimana data di ambil seperti coastal, inland dan muntain
-- Weather Type (categorical) : Jenis cuaca yang berisi Cloudy, Rainy, Snowy dan Sunny (Target Klasifikasi)
+"""Data yang digunakan berasal dari kaggle dengan judul "Weather Type Classification" yang dapat di unduh [disini](https://www.kaggle.com/datasets/nikhil7280/weather-type-classification).
+
+Variabel yang terdapat pada dataset adalah sebagai berikut:
+
+- `Temperature` (numeric) : Temperatur suhu dalam celcius
+- `Humidity` (numeric) : Presentase Kelembaban
+- `Wind Speed` (numeric) : Kecepatan angin dalam kilometer/jam
+- `Precipitation (%)` (numeric) : Presentase curah hujan
+- `Cloud Cover` (categorical) : Deskripsi tutupan awan yang berisi clear, cloudy, overcast dan party cloudy
+- `Atmospheric Pressure` (numeric) : Tekanan atmosfer dalam hPa
+- `UV index` (numeric) : Indeks UX yang menunjukkan kekuatan radiasi UV
+- `Season` (categorical) : Jenis musim mulai dari Autumn, Spring, Summer dan Winter
+- `Visibility` (km) (numeric) : Jarak pandang dalam km
+- `Location` (categorical) : Lokasi dimana data di ambil seperti coastal, inland dan muntain
+- `Weather Type` (categorical) : Jenis cuaca yang berisi Cloudy, Rainy, Snowy dan Sunny (Target Klasifikasi)
+
+Totalnya ada 11 variabel dengan jumlah 13200 data
+"""
+
+# Cek nilai duplikat pada data
+duplicate_rows = cuaca[cuaca.duplicated()]
+print("Jumlah baris duplikat:", duplicate_rows.shape[0])
+
+"""Berdasarkan hasil pengecekan tidak ditemukan nilai duplikat"""
+
+# Cek nilai kosong pada data
+print(cuaca.isnull().sum())
+
+"""Berdasarkan pengecekan juga, tidak ditemukan data yang kosong
 
 ## Mengubah Type data
 """
@@ -72,59 +91,51 @@ Mengubahnya menjadi numerik akan mempermudah pengambilan keputusan
 # update data
 cuaca.describe()
 
+# cek data lagi
+cuaca.info()
+
 """## Menangani Outliers
 
+Outlier adalah titik data yang secara signifikan berada di sebgaian data dalam kumpulan data. Outlier ini bisa muncul karena banyak faktor salah satunya adalah kesalahan pengamatan.
 """
 
 #menampilkan data outlier
-
-import numpy as np
-import matplotlib.pyplot as plt
-
-# Loop through numerical columns and create boxplots
 for column in cuaca.select_dtypes(include=np.number).columns:
   plt.figure(figsize=(8, 6))
   sns.boxplot(x=cuaca[column])
   plt.title(f'Boxplot of {column}')
   plt.show()
 
-# Menghitung Q1 dan Q3 untuk kolom numerik
-for column in cuaca.select_dtypes(include=np.number).columns:
-  Q1 = cuaca[column].quantile(0.25)
-  Q3 = cuaca[column].quantile(0.75)
-  IQR = Q3 - Q1
-  lower_bound = Q1 - 1.5 * IQR
-  upper_bound = Q3 + 1.5 * IQR
-  outlier_count = len(cuaca[(cuaca[column] < lower_bound) | (cuaca[column] > upper_bound)])
-  print(f"Jumlah outlier di kolom '{column}': {outlier_count}")
+"""Berdasarkan boxplot diatas, ada 4 fitur yang memiliki outlier yakni fitur `Temperature`, `Wind Speed`, `Athmospheric Pressure` dan `Visibility (km)`
 
-"""Berdasarkan jumlah outlier, jika dijumlahkan datanya ada 1806 atau 13,6% dari total 13200 data.
-jika dihapus akan mengurangi data lumayan banyak.
-Saya mengganti nilai di kolom tertentu yang berada di luar batas atas dan bawah dengan nilai median kolom tersebut agar tidak menghilangkan niali outliernya dan tidak membuang data
+Outlier perlu dihapus untuk mendapatkan model yang bagus
+
 """
 
-import numpy as np
+# Pilih yang numerik saja
+numeric_cuaca = cuaca.select_dtypes(include=np.number)
 
-# Fungsi untuk mengganti outlier dengan median berdasarkan batas yang ditentukan
-def replace_outliers(df, column, upper_limit, lower_limit=None):
-    if lower_limit is None:
-        lower_limit = df[column].min()  # Menggunakan nilai minimum kolom jika tidak ada batas bawah
-    median_value = df[column].median()  # Menghitung median kolom
-    df[column] = np.where((df[column] < lower_limit) | (df[column] > upper_limit), median_value, df[column])
-    return df
+Q1 = numeric_cuaca.quantile(0.25)
+Q3 = numeric_cuaca.quantile(0.75)
+IQR = Q3 - Q1
 
-# Menangani outlier pada setiap kolom sesuai batas yang sudah ditentukan
-cuaca = replace_outliers(cuaca, 'Temperature', upper_limit=50)  # Mengganti suhu > 50°C dengan median
-cuaca = replace_outliers(cuaca, 'Humidity', upper_limit=100)  # Mengganti kelembaban > 100% dengan median
-cuaca = replace_outliers(cuaca, 'Wind Speed', upper_limit=25)  # Mengganti kecepatan angin > 25 m/s dengan median
-cuaca = replace_outliers(cuaca, 'Precipitation (%)', upper_limit=100)  # Mengganti curah hujan > 100% dengan median
-cuaca = replace_outliers(cuaca, 'Atmospheric Pressure', upper_limit=1060, lower_limit=970)  # Mengganti tekanan udara di luar 970-1060 hPa dengan median
-cuaca = replace_outliers(cuaca, 'Visibility (km)', upper_limit=15)  # Mengganti visibilitas > 15 km dengan median
+lower_bound = Q1 - 1.5 * IQR
+upper_bound = Q3 + 1.5 * IQR
 
-# Mengecek deskripsi ulang data setelah penggantian
-print(cuaca.describe())
+cuaca = cuaca[~((numeric_cuaca < lower_bound) | (numeric_cuaca > upper_bound)).any(axis=1)]
 
-"""## Univariate Analysis"""
+"""Outlier telah dihapus"""
+
+cuaca.shape
+
+"""Jumlah data sekarang menjadi 11689 dari 13200 data
+
+## Univariate Analysis
+
+Univariate Analysis adalah jenis analisis data yang memeriksa satu variabel saja. Tujuannya uuntuk menggambarkan data dan menemukan pola distribusi data
+
+Sebelum mulai analysis kita bagi datanya menjadi 2 bagian, yakni `numerical_fitur` untuk data numerik dan `categorical_features` untuk data kategorik
+"""
 
 # bagi menjadi 2 fitur
 numerical_features = ['Temperature', 'Humidity', 'Wind Speed', 'Precipitation (%)', 'Atmospheric Pressure', 'UV Index', 'Visibility (km)', 'Weather Type']
@@ -140,6 +151,13 @@ df = pd.DataFrame({'jumlah sampel':count, 'persentase':percent.round(1)})
 print(df)
 count.plot(kind='bar', title=feature);
 
+"""Berdasarkan grafik pada fitur `Cloud Cover` di atas:
+- `overcast` memiliki 5467 data
+- `party cloud` memiliki 4072 data
+- `clear` memiliki 2084 data
+- `cloudy` memiliki 57 data
+"""
+
 # Fitur Season
 feature = categorical_features[1]
 count = cuaca[feature].value_counts()
@@ -147,6 +165,13 @@ percent = 100*cuaca[feature].value_counts(normalize=True)
 df = pd.DataFrame({'jumlah sampel':count, 'persentase':percent.round(1)})
 print(df)
 count.plot(kind='bar', title=feature);
+
+"""Berdasarkan grafik pada fitur `Season` di atas:
+- `winter` memiliki 5610 data
+- `Spring` memiliki 2598 data
+- `Autumn` memiliki 2500 data
+- `Summer` memiliki 2492 data
+"""
 
 # Fitur Location
 feature = categorical_features[2]
@@ -156,12 +181,22 @@ df = pd.DataFrame({'jumlah sampel':count, 'persentase':percent.round(1)})
 print(df)
 count.plot(kind='bar', title=feature);
 
-"""### Numerical Features"""
+"""Berdasarkan grafik pada fitur `Location` di atas:
+- `inland` memiliki 4301 data
+- `mountain` memiliki 4297 data
+- `coastal` memiliki 3091 data
+
+### Numerical Features
+"""
 
 cuaca.hist(bins=50, figsize=(20,15))
 plt.show()
 
-"""## Multivariate Analysis
+"""Berdasarkan grafik diatas, hampir semmua kolom skewnessnya mengarah ke kiri kecuali `Humidity` dan `Atmospheric Pressure`. Sedangkan untuk `Weather Type` datanya terlihatseimbang
+
+## Multivariate Analysis
+
+Multivariate Analysis menunjukkan hubungan antara dua atau lebih variabel pada data. Multivariate Analysis yang menunjukkan hubungan antara dua variabel biasa disebut sebagai bivariate Analysis. Selanjutnya, kita akan melakukan analisis data pada fitur kategori dan numerik.
 
 ### Categorical Features
 """
@@ -177,35 +212,13 @@ for col in cat_features:
 2. Pada fitur 'Season', rata-rata Tipe cuaca yang muncul hampir sama di kisaran 1,2 - 1,6 menandakan hubungan 'Season' dengan 'Weather Type' rendah
 3. Pada fitur 'Location', rata-rata Tipe cuaca yang juga hampir mirip. Ini juga menandakan rendahnya hubungan antara fitur 'Location' dan 'Weather Type'
 
-
-"""
-
-# Ubah menjadi numerik
-cuaca1 = cuaca.copy() # buat kopian data agar data asli tidak berubah
-le = LabelEncoder()
-for feature in ['Cloud Cover', 'Season', 'Location']:
-  cuaca1[feature] = le.fit_transform(cuaca[feature])
-
-cuaca1.head()
-
-"""Untuk melihat hubungan fitur kategori dengan Weather Type terutama pada fitur 'Cloud COver', saya ubah menjadi data numerik dan melihat korelasinya"""
-
-# Mengetahui skor korelasi
-plt.figure(figsize=(10, 8))
-correlation_matrix = cuaca1[['Cloud Cover', 'Season', 'Location', 'Weather Type']].corr().round(2)
-
-# Untuk menge-print nilai di dalam kotak, gunakan parameter anot=True
-sns.heatmap(data=correlation_matrix, annot=True, cmap='coolwarm', linewidths=0.5, )
-plt.title("Correlation Matrix untuk Fitur kategorik", size=20)
-plt.tight_layout()
-
-"""Dari hasil cek korelasi di atas benar prediksi daya jika Cloud Cover memiliki korelasi -0,54 dengan Weather Type. Karena bernilai negatif, ini menandakan bahwa semakin tinggi tingkat awan (mendung), semakin buruk jenis cuaca yang diprediksi, dan sebaliknya. Hubungan ini berkebalikan dengan data dan akan kita abaikan
-
 ### Numerical Features
 """
 
 # Mengamati hubungan antar fitur numerik dengan fungsi pairplot()
 sns.pairplot(cuaca, diag_kind = 'kde')
+
+"""Berdasarkan visualisasi data diatas, tidak terlihat adanya huubungan yang signifikan antara fitur dengan target `Weather Type`"""
 
 # Mengetahui skor korelasi
 plt.figure(figsize=(10, 8))
@@ -217,21 +230,24 @@ plt.title("Correlation Matrix untuk Fitur Numerik ", size=20)
 plt.tight_layout()
 
 """Berdasarkan nilai korelasi di atas
-- UV index menjadi fitur yang paling mempengaruhi Tipe Cuaca
-- Temperature dan Visibilty adalah fitur yang tidak mempunya korelasi dengan tipe cuaca dan akan di hapus
+- `Temperature` dan `Visibilty (km)` adalah fitur yang mempunyai nilai korelasi paling kecil dengan target `Weather Type` dan akan di hapus
 """
 
-# Ada beberapa yang tidak memilik korelasi dengan Weather Type, maka kita hilangkan saja
+# Ada beberapa yang tidak memilik korelasi dengan Weather Type, maka dihilangkan
 cuaca.drop(['Temperature', 'Visibility (km)'], inplace=True, axis=1)
 cuaca.head()
 
 cuaca.info()
 
-"""# Data Preparation
+"""Penghapusan fitur `Temperature` dan `Visibilty (km)` karena memiliki nilai korelasi yang rendah. Berdasarkan data terbaru, tersisa 9 kolom yakni 3 kategorik dan 6 numerik
+
+# Data Preparation
+
+Data preparation merupakan tahapan penting dalam proses pengembangan model machine learning. Ini adalah tahap di mana kita melakukan proses transformasi pada data sehingga menjadi bentuk yang cocok untuk proses pemodelan.
 
 ## Encoding FItur Kategori
 
-Ubah data kategori menjadi numerik dengan teknik one-hot encoding
+Encoding fitu kategori adalah teknik yang umum dilakukan adalah teknik one-hot-encoding. Library scikit-learn menyediakan fungsi ini untuk mendapatkan fitur baru yang sesuai sehingga dapat mewakili variabel kategori. Kita memiliki tiga variabel kategori dalam dataset kita, yaitu `Cloud Cover`, `Season`, dan `Location`.
 """
 
 from sklearn.preprocessing import  OneHotEncoder
@@ -243,8 +259,7 @@ cuaca.head()
 
 """## Train-Test-Split
 
-Kita akan membagi dataset menjadi data latih (train) dan data uji (test), pada data ini saya akan membagi data menjadi 90:10.
-jika ada 13200 data seharusnya 11880 data latih dan 1320 data uji
+Train-Test-Split adalah metode untuk membagi dataset menjadi data latih (train) dan data uji (test). Biasanya data akan dibagi dengan proporsi tertentu. Dalam kasus ini saya akan membagi data menjadi 90:10 dimana 90% untuk training dan 10% untuk testing
 """
 
 # Membagi 90:10 (10% untuk data uji/test)
@@ -259,9 +274,17 @@ print(f'Total # of sample in whole dataset: {len(X)}')
 print(f'Total # of sample in train dataset: {len(X_train)}')
 print(f'Total # of sample in test dataset: {len(X_test)}')
 
-"""## Standarisasi
+"""Berdasarkan output diatas kita telah sukses melakukan proses Train-Test-Split, terlihat bahwa:
+- Dataset train memiliki 10520 data
+- Dataset test memiliki 1169 data
 
-Selanjutnya akan kita standarisasi data numeriknya menggunakan teknik StandarScaler. Teknik ini mengurangkan nilai rata-rata kemudian membaginya dengan stranda deviasi untuk menggeser nilai distribusinya menjadi -1 sampai 1
+## Standarisasi
+
+Standardisasi adalah teknik transformasi yang paling umum digunakan dalam tahap persiapan pemodelan. Untuk fitur numerik, kita tidak akan melakukan transformasi dengan one-hot-encoding seperti pada fitur kategori. Kita akan menggunakan teknik StandarScaler dari library Scikitlearn.
+
+StandardScaler melakukan proses standarisasi fitur dengan mengurangkan mean (nilai rata-rata) kemudian membaginya dengan standar deviasi untuk menggeser distribusi.  StandardScaler menghasilkan distribusi dengan standar deviasi sama dengan 1 dan mean sama dengan 0. Sekitar 68% dari nilai akan berada di antara -1 dan 1.
+
+Pada kasus ini kita hanya akan melakukan standarisai pada data latih, kemudian pada tahap evaluasi kita akan melakukan standarisasi pada data uji.
 """
 
 # Standarisasi data latih (train) dengan StandardCaler (utk numerik)
@@ -276,20 +299,50 @@ X_train[numerical_features].head()
 # mengecek nilai mean dan standar deviasi pada setelah proses standarisasi
 X_train[numerical_features].describe().round(4)
 
-"""# Model Deployment
+"""Seperti yang disebutkan sebelumnya, proses ini akan mengubah nilai rata-rata (mean) menjadi 0 dan standar deviasi menjadi 1.
 
-Pada tahap permodelan ini saya akan menggunakan 3 model lalu memilih yang terbaik di antaranya
+# Model Deployment
+
+Pada tahap permodelan ini saya akan menggunakan 3 model yang berbeda, berikut ini adalah ketiga algoritma tersebut:
 1. K-Nearest Neighbor (KNN)
+  - Kelebihan
+    - Sederhana dan mudah diimplementasikan
+    - Non-parametrik
+    - Fleksibel
+  - Kekurangan
+    - Lambat pada data besar
+    - Sensitif terhadap fitur skala
+    - Rentan terhadap outlier
+
 2. Random Forest (RF)
+  - Kelebihan
+    - Akurasi tinggi
+    - Resisten terhadap overfitting
+    - Dapat menangani data yang hilang dan fitur penting
+  - Kekurangan
+    - Kurang interpretatif
+    - Lambat dalam prediksi
+
 3. Boosting Algorithm
+  - Kelebihan
+    - Akurasi sangat tinggi
+    - Bagus untuk data tidak seimbang
+    - Mengurangi bias
+  - Kekurangan
+    - Lebih rentan terhadap overfitting
+    - Waktu pelatihan yang lama
+    - Memerlukan tuning parameter
+
+Sebelum kita mulai proses modellingnya, mari siapkan data frame untuk analisis ketiga model tersebut lebih dahulu
 """
 
 # Siapkan dataframe untuk analisis model
 models = pd.DataFrame(index=['train_mse', 'test_mse'],
                       columns=['KNN', 'RandomForest', 'Boosting'])
 
-"""## Model K-Nearest Neighbor (K-NN)
+"""Pada tahap ini kita hanya melatih data training dan menyimpan data testing dari semua model untuk tahap evaluasi yang akan dibahas di Modul Evaluasi Model
 
+## Model K-Nearest Neighbor (K-NN)
 """
 
 from sklearn.neighbors import KNeighborsRegressor
@@ -300,7 +353,7 @@ knn.fit(X_train, y_train)
 
 models.loc['train_mse','knn'] = mean_squared_error(y_pred = knn.predict(X_train), y_true=y_train)
 
-"""Melatih dengan KNN
+"""pada tahapan ini kita akan melatih data dengan KNN, kita menggunakan `n_neighbors`= 10 tetangga dan metric Euclidean untuk mengukur jarak antara titik.
 
 ## Model Random Forest
 """
@@ -314,7 +367,15 @@ RF.fit(X_train, y_train)
 
 models.loc['train_mse','RandomForest'] = mean_squared_error(y_pred=RF.predict(X_train), y_true=y_train)
 
-"""## Model Boosting Algorithm"""
+"""Berikut adalah parameter-parameter yang digunakan:
+
+- `n_estimator`: jumlah trees (pohon) di forest. Di sini kita set `n_estimator`=50.
+- `max_depth`: ukuran seberapa banyak pohon dapat membelah (splitting) untuk membagi setiap node ke dalam jumlah pengamatan yang diinginkan. Di sini kita set `max_depth`=16.
+- `random_state`: digunakan untuk mengontrol random number generator yang digunakan. Di sini kita set `random_state`=55.
+- `n_jobs`:  komponen untuk mengontrol thread atau proses yang berjalan secara paralel.  Di sini kita set `n_job`s=-1 artinya semua proses berjalan secara paralel.
+
+## Model Boosting Algorithm
+"""
 
 from sklearn.ensemble import AdaBoostRegressor
 
@@ -322,14 +383,28 @@ boosting = AdaBoostRegressor(learning_rate=0.05, random_state=55)
 boosting.fit(X_train, y_train)
 models.loc['train_mse','Boosting'] = mean_squared_error(y_pred=boosting.predict(X_train), y_true=y_train)
 
-"""# Evaluasi Model
+"""kita akan menggunakan metode adaptive boosting. Salah satu metode adaptive boosting yang terkenal adalah AdaBoost.
 
-Proses scaling fitur numerik pada data uji, hal ini dilakukan untuk menyamakan skala di data uji dengan data latih agar bisa di evaluasi
+Berikut merupakan parameter-parameter yang digunakan pada potongan kode di atas.
+
+- `learning_rate`: bobot yang diterapkan pada setiap regressor di masing-masing proses iterasi boosting.
+- `random_state`: digunakan untuk mengontrol random number generator yang digunakan.
+
+# Evaluasi Model
+
+Pada proses evaluasi kita akan menggunakan metrik MSE atau Mean Squared Error yang akan menghitung jumlah selisih kuadrat rata-rata nilai yang sebenarnya dengan nilai prediksi.
+
+Namun, sebelum menghitung nilai MSE dalam model, kita perlu melakukan proses scaling fitur numerik pada data uji
 """
 
 # Proses Scalling
 # Lakukan scaling terhadap fitur numerik pada X_test sehingga memiliki rata-rata=0 dan varians=1
 X_test.loc[:, numerical_features] = scaler.transform(X_test[numerical_features])
+
+"""Proses scaling diatas dilakukan terhadap data uji. Hal ini harus dilakukan agar skala antara data latih dan data uji sama dan kita bisa melakukan evaluasi.
+
+Selanjutnya adalah melakukan evaluasi pada ketiga model dengan metrik MSE.
+"""
 
 # Buat variabel mse yang isinya adalah dataframe nilai mse data train dan test pada masing-masing algoritma
 mse = pd.DataFrame(columns=['train', 'test'], index=['KNN','RF','Boosting'])
@@ -345,15 +420,12 @@ for name, model in model_dict.items():
 # Panggil mse
 mse
 
-"""Selanjutnya dilakukan evaluasi pada 3 model mengguanakan MSE (Mean Squared
-Error),
-lalu kita visualisasikan hasilnya dalam bentuk plot grafik
-"""
-
 fig, ax = plt.subplots()
 mse.sort_values(by='test', ascending=False).plot(kind='barh', ax=ax, zorder=3)
 ax.grid(zorder=0)
 plt.xticks(rotation=45)
+
+"""Selanjutnya kita akan melihat nilai akurasi di tiap model"""
 
 # melihat nilai akurasi dari tiap model
 from sklearn.metrics import accuracy_score
@@ -369,7 +441,7 @@ for name, model in model_dict.items():
     accuracy = accuracy_score(y_test, y_pred_class)
     print(f"Akurasi {name}: {accuracy:.4f}")
 
-"""Setelah dibuat akurasinya dalam bentuk nilai, akurasi Random Forest menjadi yang terbesar dengan presentase 88,71%
+"""Berdasrkan visualisasi dan nilai akurasi pada ketiga model. Kita akan menggunakan algoritma `Random Forest`.
 
 Selanjutnya kita uji prediksinya menggunakan beberapa nilai dalam data
 """
@@ -382,4 +454,4 @@ for name, model in model_dict.items():
 
 pd.DataFrame(pred_dict)
 
-"""Berdasarkan nilai akurasinya dan prediksinya, permodelan yang paling mendekati dengan hasil aslinya adalah Random Forest"""
+"""Berdasarkan prediksinya juga, Random forest memiliki hasil prediksi terbaik"""
