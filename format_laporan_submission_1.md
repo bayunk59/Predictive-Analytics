@@ -362,6 +362,55 @@ Total # of sample in whole dataset: 11689
 Total # of sample in train dataset: 10520
 Total # of sample in test dataset: 1169
 ```
+Berdasarkan output diatas kita telah sukses melakukan proses Train-Test-Split, terlihat bahwa:
+- Dataset train memiliki 10520 data
+- Dataset test memiliki 1169 data
+
+### Standarisasi
+Standardisasi adalah teknik transformasi yang paling umum digunakan dalam tahap persiapan pemodelan. Untuk fitur numerik, kita tidak akan melakukan transformasi dengan one-hot-encoding seperti pada fitur kategori. Kita akan menggunakan teknik StandarScaler dari library Scikitlearn.
+
+StandardScaler melakukan proses standarisasi fitur dengan mengurangkan mean (nilai rata-rata) kemudian membaginya dengan standar deviasi untuk menggeser distribusi.  StandardScaler menghasilkan distribusi dengan standar deviasi sama dengan 1 dan mean sama dengan 0. Sekitar 68% dari nilai akan berada di antara -1 dan 1.
+
+Pada kasus ini kita hanya akan melakukan standarisai pada data latih, kemudian pada tahap evaluasi kita akan melakukan standarisasi pada data uji.
+
+```
+from sklearn.preprocessing import StandardScaler
+
+numerical_features = ['Humidity', 'Wind Speed', 'Precipitation (%)','Atmospheric Pressure', 'UV Index']
+scaler = StandardScaler()
+scaler.fit(X_train[numerical_features])
+X_train[numerical_features] = scaler.transform(X_train.loc[:, numerical_features])
+X_train[numerical_features].head()
+```
+
+output:
+|     | Humidity   | Wind Speed | Precipitation (%) | Atmospheric Pressure | UV Index  |
+|-----|------------|------------|-------------------|----------------------|-----------|
+| 5908| -0.795473  | -1.373182  | -1.463063         | 1.492121             | 0.658528  |
+| 2175| 1.007657   | 0.315739   | 0.531440          | 0.757302             | -0.728680 |
+|  621| -0.589401  | -0.306495  | -1.120258         | 1.014102             | -0.451238 |
+| 2363| 1.059175   | -0.662057  | 1.092394          | 1.706378             | 2.045736  |
+| 3887| -1.671279  | -1.106510  | -1.182586         | 0.300168             | 0.381087  |
+
+Mengecek nilai mean dan standar deviasi setelah proses standarisasi
+```
+X_train[numerical_features].describe().round(4)
+```
+
+output:
+
+|                  | Humidity  | Wind Speed | Precipitation (%) | Atmospheric Pressure | UV Index |
+|------------------|-----------|------------|-------------------|----------------------|----------|
+| count            | 10520.0000| 10520.0000 | 10520.0000        | 10520.0000           | 10520.0000 |
+| mean             | 0.0000    | -0.0000    | -0.0000           | -0.0000              | 0.0000    |
+| std              | 1.0000    | 1.0000     | 1.0000            | 1.0000               | 1.0000    |
+| min              | -2.5471   | -1.6399    | -1.6189           | -3.3554              | -1.0061   |
+| 25%              | -0.5379   | -0.7509    | -1.0579           | -0.8084              | -0.7287   |
+| 50%              | 0.0288    | -0.1287    | 0.1263            | 0.1312               | -0.4512   |
+| 75%              | 0.7501    | 0.7602     | 0.9054            | 0.7751               | 0.6585    |
+| max              | 2.0380    | 2.9825     | 1.7780            | 3.3214               | 2.8781    |
+
+Seperti yang disebutkan sebelumnya, proses ini akan mengubah nilai rata-rata (mean) menjadi 0 dan standar deviasi menjadi 1.
 
 ## Modeling
 
