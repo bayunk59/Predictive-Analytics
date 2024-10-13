@@ -16,9 +16,9 @@ Berdasarkan data yang diambil dari kaggle mengenai klasifikasi cuaca, terdapat b
 
 ### Problem Statements
 
-Problem statements yang ingin kami bahas adalah:
+Problem statements yang ingin dibahas adalah:
 
-1. Berdasarkan dataset yang kami gunakan, fitur-fitur apa saja yang membedakan tipe cuaca yang satu dengan yang lainnya?
+1. Berdasarkan dataset yang digunakan, fitur-fitur apa saja yang membedakan tipe cuaca yang satu dengan yang lainnya?
 2. Bagaimana cara mendapatkan model terbaik untuk klasifikasi cuaca tersebut?
 
 ### Goals
@@ -26,7 +26,7 @@ Problem statements yang ingin kami bahas adalah:
 Goals/tujuan dari poyek ini adalah:
 
 1. Melakukan eksplorasi pada semua fitur untuk menentukan fitur mana saja yang memiliki pengaruh besar atau korelasi tertinggi dengan tipe cuaca tersebut.
-2. Melakukan proses training terhadap beberapa model yang kami gunakan di proyek ini.
+2. Melakukan proses training terhadap beberapa model yang digunakan dalam proyek ini.
 
 ### Solution statements
 
@@ -164,7 +164,7 @@ Ubah tipe data berhasil, tipe data `Weather Type` berubah menjadi numerik dengan
 ### Univariate Analysis
 Univariate Analysis adalah jenis analisis data yang memeriksa satu variabel saja. Tujuannya uuntuk menggambarkan data dan menemukan pola distribusi data
 
-Sebelum mulai analysis kita bagi datanya menjadi 2 bagian, yakni `numerical_fitur` untuk data numerik dan `categorical_features` untuk data kategorik
+Sebelum mulai analysis data akan dibagi menjadi 2 bagian, yakni `numerical_fitur` untuk data numerik dan `categorical_features` untuk data kategorik
 ```
 numerical_features = ['Temperature', 'Humidity', 'Wind Speed', 'Precipitation (%)', 'Atmospheric Pressure', 'UV Index', 'Visibility (km)', 'Weather Type']
 categorical_features = ['Cloud Cover', 'Season', 'Location']
@@ -213,7 +213,7 @@ Menampilkan data numerik dalam bentuk grafik
 Berdasarkan grafik diatas, hampir semmua kolom skewnessnya mengarah ke kiri kecuali `Humidity` dan `Atmospheric Pressure`. Sedangkan untuk `Weather Type` datanya terlihat seimbang
 
 ### Multivariate Analysis
-Multivariate Analysis menunjukkan hubungan antara dua atau lebih variabel pada data. Multivariate Analysis yang menunjukkan hubungan antara dua variabel biasa disebut sebagai bivariate Analysis. Selanjutnya, kita akan melakukan analisis data pada fitur kategori dan numerik.
+Multivariate Analysis menunjukkan hubungan antara dua atau lebih variabel pada data. Multivariate Analysis yang menunjukkan hubungan antara dua variabel biasa disebut sebagai bivariate Analysis. Selanjutnya, akan dilakukan analisis data pada fitur kategori dan numerik.
 
 #### Categorical Features
 Menampilkan hubungan fitur kategori dengan target `Weather Type`
@@ -312,10 +312,10 @@ Penghapusan fitur `Temperature` dan `Visibilty (km)` karena memiliki nilai korel
 
 ## Data Preparation
 
-Data preparation merupakan tahapan penting dalam proses pengembangan model machine learning. Ini adalah tahap di mana kita melakukan proses transformasi pada data sehingga menjadi bentuk yang cocok untuk proses pemodelan. Dalam data preparation akan dilakukan 3 tahapan, yakni Encoding Fiitur Kategori, Train-Test-Split dan Standarisasi.
+Data preparation merupakan tahapan penting dalam proses pengembangan model machine learning. Ini adalah tahapan dilakukannya proses transformasi pada data sehingga menjadi bentuk yang cocok untuk proses pemodelan. Dalam data preparation akan dilakukan 3 tahapan, yakni Encoding Fiitur Kategori, Train-Test-Split dan Standarisasi.
 
 ### Encoding Fitur Kategori
-Encoding fitu kategori adalah teknik yang umum dilakukan adalah teknik one-hot-encoding. Library scikit-learn menyediakan fungsi ini untuk mendapatkan fitur baru yang sesuai sehingga dapat mewakili variabel kategori. Kita memiliki tiga variabel kategori dalam dataset kita, yaitu `Cloud Cover`, `Season`, dan `Location`.
+Encoding fitu kategori adalah teknik yang umum dilakukan adalah teknik one-hot-encoding. Library scikit-learn menyediakan fungsi ini untuk mendapatkan fitur baru yang sesuai sehingga dapat mewakili variabel kategori. Terdapat tiga variabel kategori dalam dataset, yaitu `Cloud Cover`, `Season`, dan `Location`.
 
 Ubah data kategorik
 ```
@@ -417,60 +417,183 @@ Seperti yang disebutkan sebelumnya, proses ini akan mengubah nilai rata-rata (me
 Pada tahap ini, saya akan mengembangkan model machine learning dengan tiga algoritma. Kemudian, saya akan mengevaluasi performa masing-masing algoritma dan menentukan algoritma mana yang memberikan hasil prediksi terbaik. Ketiga algoritma yang akan saya gunakan, antara lain:
 
 1. K-Nearest Neighbor
+   - Kelebihan:
+      - Sederhana dan mudah diimplementasikan: Tidak memerlukan asumsi distribusi data.
+      - Non-parametrik: Tidak membuat asumsi tentang bentuk distribusi data.
+      - Fleksibel: Dapat digunakan untuk klasifikasi dan regresi.
+   - Kekurangan:
+      - Lambat pada data besar: Perhitungan jarak untuk semua data memerlukan banyak waktu.
+      - Sensitif terhadap skala fitur: Performa bisa terganggu jika skala fitur tidak dinormalisasi.
+      - Rentan terhadap outlier: Outlier dapat mempengaruhi prediksi.
+        
 2. Random Forest
+   - Kelebihan:
+      - Akurasi tinggi: Menghasilkan model yang kuat melalui penggabungan banyak pohon keputusan.
+      - Resisten terhadap overfitting: Karena menggunakan banyak pohon, cenderung tidak overfit.
+       - Dapat menangani data yang hilang dan fitur penting: Mampu menangani data yang tidak lengkap.
+   - Kekurangan:
+      - Kurang interpretatif: Sulit untuk menafsirkan hasil model karena kompleksitas pohon yang                   dihasilkan.
+      - Lambat dalam prediksi: Meskipun cepat dalam pelatihan, bisa lambat saat melakukan prediksi pada            dataset besar.
+      - 
 3. Boosting Algorithm
+   - Kelebihan:
+      - Akurasi sangat tinggi: Memperbaiki kesalahan dari model sebelumnya sehingga cenderung menghasilkan         prediksi yang lebih akurat.
+      - Bagus untuk data tidak seimbang: Dapat bekerja dengan baik pada data yang memiliki distribusi              kelas yang tidak seimbang.
+      - Mengurangi bias: Fokus pada kesalahan model sebelumnya mengurangi bias model.
+   - Kekurangan:
+      - Lebih rentan terhadap overfitting: Jika tidak diatur dengan baik, dapat menghasilkan model yang            terlalu fit terhadap data pelatihan.
+      - Waktu pelatihan yang lama: Karena model dilatih secara berurutan, pelatihan bisa memakan waktu             lebih lama.
+      - Memerlukan tuning parameter: Hyperparameter harus diatur dengan cermat untuk performa yang optimal.
 
-dengan tahapan sebagai berikut:
+Sebelum dimulainya proses modelling, mari siapkan terlebih dahulu data frame untuk analisis ketiga model tersebut.
+```
+models = pd.DataFrame(index=['train_mse', 'test_mse'],
+                      columns=['KNN', 'RandomForest', 'Boosting'])
+```
 
-- Pertama saya siapkan data yang akan digunakan untuk model
-- Selanjutnya saya melatih dengan K-Nearest Neighbor terlebih dahulu, nilai k yang saya gunakan adalah 10 tetangga dan menggunakan metric Euclidean. nilai k ini menunjukkan titik data terdekat (tetangga), sedangkan metric euclidean adalah cara paling umum untuk mengukur jarak antar dua ruang mutidimensi
-- Model ini mudah dipahami dan digunakan tetapi selalu ada kekurangannya. kekurangannya muncul jika jumlah fiturnya sangat banyak
-- Selanjutnya kami akan melatihnya menggunakan Random Forest dengan bantuan library scikit-learn
-- Beberapa parameter yang digunakan adalah n_estimator (jumlah pohon), max_depth (kedalaman /panjang pohon), random_state (random number), n_jobs (jumlah pekerjaan yang dilakukan secara paralel)
-  -Yang terakhir, saya akan menggunakan model Boosting Algorithm dengan metode adaptive boosting. Dalam kasus ini awalnya semua data latih memiliki weight atau bobot yang sama, kemudian model diperiksa apakah observasi yang dilakukan sudah benar, jika benar bobot akan lebih tinggi yang kemudian akan diberikan pada bobot yang kecil sehinggan akan masuk ke tahap berikutnya. Prosesnya akan berulang terus sampai model mencapau akurasi yang diinginkan
-- Parameter yang digunakan dalam model ini adalah learning_rate (bobot yang ditetapkan pada setiap regresor) dan random_statr (digunakan untuk mengontrol random number generator yang digunakan)
+Tahap ini hanya digunakan untuk melatih data training dan menyimpan data testing dari semua model untuk tahap evaluasi yang akan dibahas di Modul Evaluasi Model
+
+### Model K-Nearest Neighbor (KNN)
+KNN adalah algoritma yang relatif sederhana dibandingkan dengan algoritma lain. Algoritma KNN menggunakan ‘kesamaan fitur’ untuk memprediksi nilai dari setiap data yang baru. Dengan kata lain, setiap data baru diberi nilai berdasarkan seberapa mirip titik tersebut dalam set pelatihan.
+
+KNN bekerja dengan membandingkan jarak satu sampel ke sampel pelatihan lain dengan memilih sejumlah k tetangga terdekat (dengan k adalah sebuah angka positif). Nah, itulah mengapa algoritma ini dinamakan K-nearest neighbor (sejumlah k tetangga terdekat). KNN bisa digunakan untuk kasus klasifikasi dan regresi. Pada modul ini, kita akan menggunakannya untuk kasus regresi.
+   
+```
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.metrics import mean_squared_error
+
+knn = KNeighborsRegressor(n_neighbors=10)
+knn.fit(X_train, y_train)
+
+models.loc['train_mse','knn'] = mean_squared_error(y_pred = knn.predict(X_train), y_true=y_train)   
+```
+
+pada tahapan ini kita akan melatih data dengan KNN, kita menggunakan `n_neighbors`= 10 tetangga dan metric Euclidean untuk mengukur jarak antara titik.
+   
+### Model Random Forest
+Algoritma random forest adalah salah satu algoritma supervised learning. Ia dapat digunakan untuk menyelesaikan masalah klasifikasi dan regresi. Random forest juga merupakan algoritma yang sering digunakan karena cukup sederhana tetapi memiliki stabilitas yang mumpuni. 
+
+Random forest merupakan salah satu model machine learning yang termasuk ke dalam kategori ensemble (group) learning. Apa itu model ensemble? Sederhananya, ia merupakan model prediksi yang terdiri dari beberapa model dan bekerja secara bersama-sama. 
+
+```
+# Impor library yang dibutuhkan
+from sklearn.ensemble import RandomForestRegressor
+
+# buat model prediksi
+RF = RandomForestRegressor(n_estimators=50, max_depth=16, random_state=55, n_jobs=-1)
+RF.fit(X_train, y_train)
+
+models.loc['train_mse','RandomForest'] = mean_squared_error(y_pred=RF.predict(X_train), y_true=y_train)
+```
+
+Berikut adalah parameter-parameter yang digunakan:
+
+- `n_estimator`: jumlah trees (pohon) di forest. Di sini nilai set `n_estimator`=50.
+- `max_depth`: ukuran seberapa banyak pohon dapat membelah (splitting) untuk membagi setiap node ke dalam jumlah pengamatan yang diinginkan. Di sini nilai set `max_depth`=16.
+- `random_state`: digunakan untuk mengontrol random number generator yang digunakan. Di sini nilai set `random_state`=55.
+- `n_jobs`:  komponen untuk mengontrol thread atau proses yang berjalan secara paralel.  Di sini nilai set `n_job`s=-1 artinya semua proses berjalan secara paralel.
+
+### Model Boosting Algorithm
+Teknik boosting, model dilatih secara berurutan atau dalam proses yang iteratif. Algoritma yang menggunakan teknik boosting bekerja dengan membangun model dari data latih. Kemudian ia membuat model kedua yang bertugas memperbaiki kesalahan dari model pertama. Model ditambahkan sampai data latih terprediksi dengan baik atau telah mencapai jumlah maksimum model untuk ditambahkan. 
+
+Dilihat dari caranya memperbaiki kesalahan pada model sebelumnya, algoritma boosting terdiri dari dua metode:
+   1. Adaptive boosting
+   2. Gradient boosting
+Pada modul ini, kita akan menggunakan metode adaptive boosting. Salah satu metode adaptive boosting yang terkenal adalah AdaBoost, dikenalkan oleh Freund and Schapire (1995)
+
+```
+from sklearn.ensemble import AdaBoostRegressor
+ 
+boosting = AdaBoostRegressor(learning_rate=0.05, random_state=55)                             
+boosting.fit(X_train, y_train)
+models.loc['train_mse','Boosting'] = mean_squared_error(y_pred=boosting.predict(X_train), y_true=y_train)
+```
+
+Berikut merupakan parameter-parameter yang digunakan pada potongan kode di atas.
+- `learning_rate`: bobot yang diterapkan pada setiap regressor di masing-masing proses iterasi boosting.
+- `random_state`: digunakan untuk mengontrol random number generator yang digunakan.
 
 ## Evaluation
+Pada proses evaluasi kita akan menggunakan metrik MSE atau Mean Squared Error yang akan menghitung jumlah selisih kuadrat rata-rata nilai yang sebenarnya dengan nilai prediksi.
 
-**akurasi, precision, recall, dan F1 score**.
+Namun, sebelum menghitung nilai MSE dalam model, kita perlu melakukan proses scaling fitur numerik pada data uji. Untuk proses scaling, implementasikan kode berikut:
+```
+X_test.loc[:, numerical_features] = scaler.transform(X_test[numerical_features])
+```
 
-- Metrik yang saya gunakan adalah MSE atau Mas Square Error yang menghitung jumlah selisih kuadrat rata-rata nilai sebenarnya dengan nilai prediksi.
-- 1. Saya melakukan scalling antara data uji dan data latih
-  2. Selanjutnya di evaluasi menggunakan metriks MSE
-  3. Berdasarkan evaluasinya, didapatkan nilai
+Proses scaling diatas dilakukan terhadap data uji. Hal ini harus dilakukan agar skala antara data latih dan data uji sama dan kita bisa melakukan evaluasi. Selanjutnya adalah melakukan evaluasi pada ketiga model dengan metrik MSE.
 
-  <picture>
-   <img alt="evaluasi" src="https://github.com/bayunk59/Predictive-Analytics/blob/8eb482327e481fc83ff1fc07a5a6c7b403bc54f8/Cuplikan%20layar%202024-10-08%20213620.png">
-  </picture>
+```
+# Buat variabel mse yang isinya adalah dataframe nilai mse data train dan test pada masing-masing algoritma
+mse = pd.DataFrame(columns=['train', 'test'], index=['KNN','RF','Boosting'])
 
-  4. kami plot metrik nilai tersebut dengan bar chart
+# Buat dictionary untuk setiap algoritma yang digunakan
+model_dict = {'KNN': knn, 'RF': RF, 'Boosting': boosting}
 
-  <picture>
-   <img alt="plot" src="https://github.com/bayunk59/Predictive-Analytics/blob/3084490391ff56206ed036d9be5678ce7ebc4002/Cuplikan%20layar%202024-10-08%20214355.png">
-  </picture>
+# Hitung Mean Squared Error masing-masing algoritma pada data train dan test
+for name, model in model_dict.items():
+    mse.loc[name, 'train'] = mean_squared_error(y_true=y_train, y_pred=model.predict(X_train))/1e3
+    mse.loc[name, 'test'] = mean_squared_error(y_true=y_test, y_pred=model.predict(X_test))/1e3
 
-  5. Cek Akurasinya
-     <picture>
-     <img alt="akurasi" src="https://github.com/bayunk59/Predictive-Analytics/blob/3084490391ff56206ed036d9be5678ce7ebc4002/Cuplikan%20layar%202024-10-08%20214416.png">
-     </picture>
+# Panggil mse
+mse
+```
 
-  pada akurasi tersebut hasilnya menunjukkan model Random Forest memiliki nilai 88,71%, K-Nearest Neighbor memiliki nilai 84,47% sedangkan model Boosting Algorithm memiliki nilai 64,24. Saat di cek prediksinya
+output:
+|           | Train     | Test      |
+|-----------|-----------|-----------|
+| KNN       | 0.000108  | 0.000141  |
+| RF        | 0.000016  | 0.000075  |
+| Boosting  | 0.000164  | 0.000177  |
 
-  6. Cek prediksi
-     <picture>
-     <img alt="model" src="https://github.com/bayunk59/Predictive-Analytics/blob/3084490391ff56206ed036d9be5678ce7ebc4002/Cuplikan%20layar%202024-10-08%20214434.png">
-     </picture>
+Untuk memudahkan, mari kita plot metrik tersebut dengan bar chart. Implementasikan kode di bawah ini:
 
-  Random Forest menunjukkan nilai 1 yang sesuai dengan nilai sebenarnya, sedangkan K-Nearest Neighbor dan Boosting Algorithm sama-sama bernilai 0,9
+```
+fig, ax = plt.subplots()
+mse.sort_values(by='test', ascending=False).plot(kind='barh', ax=ax, zorder=3)
+ax.grid(zorder=0)
+```
+output:
+![grafik model](https://github.com/user-attachments/assets/053529c2-6b8c-43f9-82b8-7c792dd6604e)
 
-  Berdasarkan evaluasi dan modellingnya didapatkan kesimpulan:
+Selanjutnya kita akan melihta nilai akurasi di tiap model
+```
+# melihat nilai akurasi dari tiap model
+from sklearn.metrics import accuracy_score
 
-  1. Fitur yang mempunyai korelasi tertinggi dengaan Weather Type adalah fitur UV Index
-  2. Model terbaik yang muncul adalah Random Forest dengan nilai akurasi sebesar 88,64%
+# Buat dictionary untuk setiap algoritma yang digunakan
+model_dict = {'KNN': knn, 'RF': RF, 'Boosting': boosting}
 
-**---Ini adalah bagian akhir laporan---**
+# Hitung akurasi masing-masing algoritma pada data test
+for name, model in model_dict.items():
+    y_pred = model.predict(X_test)
+    # Konversi prediksi menjadi kelas (bulatkan ke bilangan bulat terdekat)
+    y_pred_class = np.round(y_pred).astype(int)
+    accuracy = accuracy_score(y_test, y_pred_class)
+    print(f"Akurasi {name}: {accuracy:.4f}")
+```
 
-_Catatan:_
+output:
+Akurasi KNN: 0.9076
+Akurasi RF: 0.9512 
+Akurasi Boosting: 0.9222
 
-- _Anda dapat menambahkan gambar, kode, atau tabel ke dalam laporan jika diperlukan. Temukan caranya pada contoh dokumen markdown di situs editor [Dillinger](https://dillinger.io/), [Github Guides: Mastering markdown](https://guides.github.com/features/mastering-markdown/), atau sumber lain di internet. Semangat!_
-- Jika terdapat penjelasan yang harus menyertakan code snippet, tuliskan dengan sewajarnya. Tidak perlu menuliskan keseluruhan kode project, cukup bagian yang ingin dijelaskan saja.
+Berdasarkan visualisasi dan nilai akurasi pada ketiga model. Kita akan menggunakan algoritma `Random Forest`.
+Selanjutnya kita uji prediksinya menggunakan beberapa nilai dalam data
+
+```
+# Uji data
+prediksi = X_test.iloc[:1].copy()
+pred_dict = {'y_true':y_test[:1]}
+for name, model in model_dict.items():
+    pred_dict['prediksi_'+name] = model.predict(prediksi).round(1)
+
+pd.DataFrame(pred_dict)
+```
+
+output:
+|     | y_true | prediksi_KNN | prediksi_RF | prediksi_Boosting |
+|-----|--------|--------------|-------------|-------------------|
+| 7259| 2      | 1.9          | 2.0         | 1.7               |
+
+Berdasarkan prediksinya juga, Random forest memiliki hasil prediksi terbaik
