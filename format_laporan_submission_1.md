@@ -2,18 +2,17 @@
 
 ## Domain Proyek
 
-Cuaca menjadi salah satu pengaruh terbesar dalam aspek kehidupan makhluk hidup terutama manusia, mulai dari melakukan perencanaan aktivitas sehari-hari hingga pengambilan keputusan dalam sektor seperti pertanian, penerbangan, transportasi dan pariwisata. Cuaca yang tak menentu dapat membuat jadwal yang kami buat menjadi berantakan, salah satu solusi yang bisa kami lakukan adalah mengklasifikasikan cuaca. Dengan mengklasifikasikan cuaca kami dapat melihat anomali apa saja yang terjadi dan
-kami dapat mempelajarinya untuk kebutuhan riset di kemudian hari.
+Cuaca menjadi salah satu pengaruh terbesar dalam aspek kehidupan makhluk hidup terutama manusia, mulai dari melakukan perencanaan aktivitas sehari-hari hingga pengambilan keputusan dalam sektor seperti pertanian, penerbangan, transportasi dan pariwisata. Cuaca yang tak menentu dapat membuat jadwal yang dibuat menjadi berantakan, salah satu solusi yang bisa dilakukan adalah mengklasifikasikan cuaca. Dengan mengklasifikasikan cuaca dapat dilihat anomali apa saja yang terjadi dan hasilnya dapat dipelajar untuk kebutuhan riset di kemudian hari.
 
 Klasifikasi cuaca adalah proses mengelompokkan cuaca berdasarkan karakteristik atau pola tertentu yang telah ada dalam data. Klasifikasi cuaca biasa digunakan untuk mengelompokkan data cuaca berdasarkan beberapa kondisi atau pola yang ada, ini bertujuan untuk menghasilkan informasi cuaca yang lebih mudah dipahami dan bisa digunakan dalam berbagai konteks.
 
-Berbeda dengan prediksi cuaca, klasifikasi cuaca bisa dikatakan lebih pasti karena didasarkan pada data yang sudah pernah terjadi. Hasil klasifikasi cuaca biasanya digunakan dalam dalam riset iklim, analisis tren cuaca , sert pembuatan aplikasi yang membutuhkan pengenalan pola cuaca.
+Berbeda dengan prediksi cuaca, klasifikasi cuaca bisa dikatakan lebih pasti karena didasarkan pada data yang sudah pernah terjadi. Hasil klasifikasi cuaca biasanya digunakan dalam riset iklim, analisis tren cuaca, serta pembuatan aplikasi yang membutuhkan pengenalan pola cuaca.
 
-Untuk melakukan klasifikasi cuaca dengan baik, kami dapat menggunakan permodelan machine learning. Dengan machine learning kami bisa mengklasifikasikan cuaca tersebut berdasarkan fitur-fitur yang sudah ada. Dalam machine learning sendiri terdapat banyak sekali algoritma untuk membuat permodelan klasifikasi. Beberapa permodelan yang bisa kami pakai adalah K-Nearest Neighbor (KNN), Random Forest dan Boosting Algoritm. Dengan memanfaatkan berbagai data yang didapat dan permodelan machine learning diharapkan klasifikasi cuaca ini mendapatkan hasil yang diinginkan dan dapat bermanfaat di kemudian hari.
+Untuk melakukan klasifikasi cuaca dengan baik, dapat digunakan permodelan machine learning. Machine learning bisa mengklasifikasikan cuaca tersebut berdasarkan fitur-fitur yang sudah ada. Dalam machine learning sendiri terdapat banyak sekali algoritma untuk membuat permodelan klasifikasi. Beberapa permodelan yang bisa dipakai adalah K-Nearest Neighbor (KNN), Random Forest dan Boosting Algoritm. Dengan memanfaatkan berbagai data yang didapat dan permodelan machine learning diharapkan klasifikasi cuaca ini mendapatkan hasil yang diinginkan dan dapat bermanfaat di kemudian hari.
 
 ## Business Understanding
 
-Berdasarkan data yang kami ambil dari kaggle mengenai klasifikasi cuaca, banyak faktor yang yang mempegaruho sebuah perubahan cuaca. Maka dari itu, dibutuhkannya pengembangan model machine learning untuk membantu dan menentukan faktor apa saja yang berpengaruh pada tipe-tipe cuaca tertentu.
+Berdasarkan data yang diambil dari kaggle mengenai klasifikasi cuaca, terdapat banyak faktor yang yang mempegaruhi sebuah perubahan cuaca. Maka dari itu, dibutuhkannya pengembangan model machine learning untuk membantu dan menentukan faktor apa saja yang berpengaruh pada tipe-tipe cuaca tertentu.
 
 ### Problem Statements
 
@@ -31,35 +30,45 @@ Goals/tujuan dari poyek ini adalah:
 
 ### Solution statements
 
-Beberapa solusi yang akan kami coba terapkan adalah:
+Beberapa solusi yang akan coba terapkan adalah:
 
 1. Melakukan eksplorasi fitur manggunakan analisis univariat dan multivariat untuk menemukan hubungan antar fitur baik yang data numerik maupun data kategorikal.
-2. Untuk mendapatkan data yang berish sebelum di buat permodelan. Dilakukan preparation data yang terdiri dari
+2. Untuk mendapatkan data yang bersih sebelum di buat permodelan. Dilakukan preparation data yang terdiri dari Encoding Fitur Kategori, Train-Test-Spit dan Standarisasi.
+3. Permodelan akan dilakukan dengan 3 algoritma model, yaitu `K-Nearest Neighbors (KNN)`, `Random Forest (RF)` dan `Boosting Algorithm` lalu akan dipilih model terbaik berdasarkan nilai akurasinya.
 
 ## Data Understanding
 
+Data yang saya gunakan berasal dari Kaggle dengan judul Weather Type Classification [cuaca](https://www.kaggle.com/datasets/nikhil7280/weather-type-classification), Data tersebut berisi 13200 data dan 11 kolom dengan 7 data numerik dan 4 data katgorik. Berikut adalah detail masing-masing kolomnya:
+
 ### Variabel-variabel pada dataset adalah sebagai berikut:
 
-Data yang saya gunakan berasal dari Kaggle dengan judul Weather Type Classification (https://www.kaggle.com/datasets/nikhil7280/weather-type-classification), yang berisi beberapa fitur data sebagai berikut:
-
-- Temperature (numeric) : Temperatur suhu dalam celcius
-- Humidity (numeric) : Presentase Kelembaban
-- Wind Speed (numeric) : Kecepatan angin dalam kilometer/jam
-- Precipitation (%) (numeric) : Presentase curah hujan
-- Cloud Cover (categorical) : Deskripsi tutupan awan yang berisi clear, cloudy, overcast dan party cloudy
-- Atmospheric Pressure (numeric) : Tekanan atmosfer dalam hPa
-- UV index (numeric) : Indeks UX yang menunjukkan kekuatan radiasi UV
-- Season (categorical) : Jenis musim mulai dari Autumn, Spring, Summer dan Winter
-- Visibility (km) (numeric) : Jarak pandang dalam km
-- Location (categorical) : Lokasi dimana data di ambil seperti coastal, inland dan muntain
-- Weather Type (categorical) : Jenis cuaca yang berisi Cloudy, Rainy, Snowy dan Sunny (Target Klasifikasi)
+- `Temperature` (numeric) : Temperatur suhu dalam celcius
+- `Humidity` (numeric) : Presentase Kelembaban
+- `Wind Speed` (numeric) : Kecepatan angin dalam kilometer/jam
+- `Precipitation (%)` (numeric) : Presentase curah hujan
+- `Cloud Cover` (categorical) : Deskripsi tutupan awan yang berisi clear, cloudy, overcast dan party cloudy
+- `Atmospheric Pressure` (numeric) : Tekanan atmosfer dalam hPa
+- `UV index` (numeric) : Indeks UX yang menunjukkan kekuatan radiasi UV
+- `Season` (categorical) : Jenis musim mulai dari Autumn, Spring, Summer dan Winter
+- `Visibility (km)` (numeric) : Jarak pandang dalam km
+- `Location` (categorical) : Lokasi dimana data di ambil seperti coastal, inland dan muntain
+- `Weather Type` (categorical) : Jenis cuaca yang berisi Cloudy, Rainy, Snowy dan Sunny (Target Klasifikasi)
 
 Tahapan yang akan saya lakukan adalah:
 
-1. Data loading :
+### Exploratory Data Analysis
 
-- saya mengambil data tersebut dari kaggle Jumlah data adalah 13200 dengan jumlah outlier 1806 atau 13,6% dari data. Data ini digunakan untuk menentukan tipe cuaca berdasarkan beberapa fitur di atas.
-- Berdasarkan hasil pengecekan tidak ditemukan duplikat data dan data kosong.
+Exploratory data analysis atau sering disingkat EDA merupakan proses investigasi awal pada data untuk menganalisis karakteristik, menemukan pola, anomali, dan memeriksa asumsi pada data. Teknik ini biasanya menggunakan bantuan statistik dan representasi grafis atau visualisasi.
+
+Berikut adalah tahapan EDA yang dilakukan
+
+1. cek nilai duplikat pada data
+
+```duplicate_rows = cuaca[cuaca.duplicated()]
+print("Jumlah baris duplikat:", duplicate_rows.shape[0])
+```
+
+Output: Tidak terdapat baris duplikay
 
 2. Exploratory Data Analysis :
 
