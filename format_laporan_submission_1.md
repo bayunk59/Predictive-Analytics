@@ -133,9 +133,35 @@ Ubah tipe data berhasil, tipe data `Weather Type` berubah menjadi numerik dengan
      plt.show()
      ```
      output:
-     [outliers]()
-     berdasarkan boxplot tersebut, ada 4 fitur yang memiliki outlier yakni fitur `Temperature`, `Wind Speed`, `Athmospheric Pressure`, dan `Visib
-   -
+     ![outlier1](https://github.com/user-attachments/assets/233ce168-9edd-4823-b346-9c895d9435b4)
+     ![outlier3](https://github.com/user-attachments/assets/1e0c1417-06d9-47eb-bc20-9cb80bc10512)
+     ![outlier5](https://github.com/user-attachments/assets/f7d3f274-a220-45d8-80ba-39b330c48cdd)
+     ![outlier7](https://github.com/user-attachments/assets/6bb6db3f-88aa-4cbd-a4e3-85db348acab0)
+     
+     berdasarkan boxplot tersebut, ada 4 fitur yang memiliki outlier yakni fitur `Temperature`, `Wind           Speed`, `Athmospheric Pressure`, dan `Visibility (km)`
+   - Outlier pada 4 fitur tersebut perlu dihapus untuk mendapatkan model yang bagus
+     ```
+     numeric_cuaca = cuaca.select_dtypes(include=np.number)
+
+     Q1 = numeric_cuaca.quantile(0.25)
+     Q3 = numeric_cuaca.quantile(0.75)
+     IQR = Q3 - Q1
+     lower_bound = Q1 - 1.5 * IQR
+     upper_bound = Q3 + 1.5 * IQR
+
+     cuaca = cuaca[~((numeric_cuaca < lower_bound) | (numeric_cuaca > upper_bound)).any(axis=1)]
+     ```
+     Outlier telah berhasil dihapus.
+   - Menampilkan data terbaru setelah outliers dihapus
+     ```
+     cuaca.shape
+     ```
+     output:
+     ``
+     (11689, 11)
+     ``
+
+     Jumlah data terbaru sekarang adalah 11689 data
 
 ## Data Preparation
 
