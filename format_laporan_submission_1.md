@@ -107,14 +107,15 @@ cuaca.head()
 output:
 
 ```
-	Temperature	Humidity	Wind Speed	Precipitation (%)	Cloud Cover	Atmospheric Pressure	UV Index	Season	Visibility (km)	Location	Weather Type
-0	14.0	73	9.5	82.0	partly cloudy	1010.82	2	Winter	3.5	inland	1
-1	39.0	96	8.5	71.0	partly cloudy	1011.43	7	Spring	10.0	inland	0
-2	30.0	64	7.0	16.0	clear	1018.72	5	Spring	5.5	mountain	3
-3	38.0	83	1.5	82.0	clear	1026.25	7	Spring	1.0	coastal	3
-4	27.0	74	17.0	66.0	overcast	990.67	1	Winter	2.5	mountain	1
-```
+| Temperature | Humidity | Wind Speed | Precipitation (%) | Cloud Cover   | Atmospheric Pressure | UV Index | Season | Visibility (km) | Location | Weather Type |
+|-------------|----------|------------|-------------------|---------------|----------------------|----------|--------|-----------------|----------|--------------|
+| 14.0        | 73       | 9.5        | 82.0              | partly cloudy | 1010.82              | 2        | Winter | 3.5             | inland   | 1            |
+| 39.0        | 96       | 8.5        | 71.0              | partly cloudy | 1011.43              | 7        | Spring | 10.0            | inland   | 0            |
+| 30.0        | 64       | 7.0        | 16.0              | clear         | 1018.72              | 5        | Spring | 5.5             | mountain | 3            |
+| 38.0        | 83       | 1.5        | 82.0              | clear         | 1026.25              | 7        | Spring | 1.0             | coastal  | 3            |
+| 27.0        | 74       | 17.0       | 66.0              | overcast      | 990.67               | 1        | Winter | 2.5             | mountain | 1            |
 
+```
 Ubah tipe data berhasil, tipe data `Weather Type` berubah menjadi numerik dengan rincian:
 0 = Cloudy
 1 = Rainy
