@@ -94,6 +94,48 @@ Weather Type            0
 dtype: int64
 ```
 
+3. Mengubah type data target, dalam ini `Weather Type` dari kategori menjadi numerik agar mudah dalam permodelan
+
+```
+from sklearn.preprocessing import LabelEncoder
+
+le = LabelEncoder()
+cuaca['Weather Type'] = le.fit_transform(cuaca['Weather Type'])
+cuaca.head()
+```
+
+output:
+
+```
+	Temperature	Humidity	Wind Speed	Precipitation (%)	Cloud Cover	Atmospheric Pressure	UV Index	Season	Visibility (km)	Location	Weather Type
+0	14.0	73	9.5	82.0	partly cloudy	1010.82	2	Winter	3.5	inland	1
+1	39.0	96	8.5	71.0	partly cloudy	1011.43	7	Spring	10.0	inland	0
+2	30.0	64	7.0	16.0	clear	1018.72	5	Spring	5.5	mountain	3
+3	38.0	83	1.5	82.0	clear	1026.25	7	Spring	1.0	coastal	3
+4	27.0	74	17.0	66.0	overcast	990.67	1	Winter	2.5	mountain	1
+```
+
+Ubah tipe data berhasil, tipe data `Weather Type` berubah menjadi numerik dengan rincian:
+0 = Cloudy
+1 = Rainy
+2 = Snowy
+3 = Sunny
+
+4. Menangani Outlier
+   Outlier adalah titik data yang secara signifikan berada di sebgaian data dalam kumpulan data. Outlier ini bisa muncul karena banyak faktor salah satunya adalah kesalahan pengamatan.
+   - Menampilkan data outlier
+     ```
+     for column in cuaca.select_dtypes(include=np.number).columns:
+     plt.figure(figsize=(8, 6))
+     sns.boxplot(x=cuaca[column])
+     plt.title(f'Boxplot of {column}')
+     plt.show()
+     ```
+     output:
+     [outliers]()
+     berdasarkan boxplot tersebut, ada 4 fitur yang memiliki outlier yakni fitur `Temperature`, `Wind Speed`, `Athmospheric Pressure`, dan `Visib
+   -
+
 ## Data Preparation
 
 Pada bagian ini kami akan melakukan tiga tahap persiapan data, yaitu:
