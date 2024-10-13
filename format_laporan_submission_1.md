@@ -106,7 +106,6 @@ cuaca.head()
 
 output:
 
-```
 | Temperature | Humidity | Wind Speed | Precipitation (%) | Cloud Cover   | Atmospheric Pressure | UV Index | Season | Visibility (km) | Location | Weather Type |
 |-------------|----------|------------|-------------------|---------------|----------------------|----------|--------|-----------------|----------|--------------|
 | 14.0        | 73       | 9.5        | 82.0              | partly cloudy | 1010.82              | 2        | Winter | 3.5             | inland   | 1            |
@@ -115,7 +114,6 @@ output:
 | 38.0        | 83       | 1.5        | 82.0              | clear         | 1026.25              | 7        | Spring | 1.0             | coastal  | 3            |
 | 27.0        | 74       | 17.0       | 66.0              | overcast      | 990.67               | 1        | Winter | 2.5             | mountain | 1            |
 
-```
 Ubah tipe data berhasil, tipe data `Weather Type` berubah menjadi numerik dengan rincian:
 0 = Cloudy
 1 = Rainy
@@ -163,18 +161,207 @@ Ubah tipe data berhasil, tipe data `Weather Type` berubah menjadi numerik dengan
 
      Jumlah data terbaru sekarang adalah 11689 data
 
+### Univariate Analysis
+Univariate Analysis adalah jenis analisis data yang memeriksa satu variabel saja. Tujuannya uuntuk menggambarkan data dan menemukan pola distribusi data
+
+Sebelum mulai analysis kita bagi datanya menjadi 2 bagian, yakni `numerical_fitur` untuk data numerik dan `categorical_features` untuk data kategorik
+```
+numerical_features = ['Temperature', 'Humidity', 'Wind Speed', 'Precipitation (%)', 'Atmospheric Pressure', 'UV Index', 'Visibility (km)', 'Weather Type']
+categorical_features = ['Cloud Cover', 'Season', 'Location']
+```
+data telah terbagi menjadi numerical_features untuk data numerik dan categorical_features untuk data kategorik
+
+#### Categorical Features
+Menampilkan data fitur dalam bentuk grafik
+```
+feature = categorical_features[2]
+count = cuaca[feature].value_counts()
+percent = 100*cuaca[feature].value_counts(normalize=True)
+df = pd.DataFrame({'jumlah sampel':count, 'persentase':percent.round(1)})
+print(df)
+count.plot(kind='bar', title=feature);
+```
+
+output:
+
+- Fitur CLour Cover
+  ![uni1](https://github.com/user-attachments/assets/1a74554d-e6a8-4e0f-8f06-68d8e4dcebfb)
+  Berdasarkan grafik pada fitur `Cloud Cover` di atas:
+   - `overcast` memiliki 5467 data
+   - `party cloud` memiliki 4072 data
+   - `clear` memiliki 2084 data
+   - `cloudy` memiliki 57 data
+
+- Fitur Season
+  ![uni2](https://github.com/user-attachments/assets/67ef8c38-2fed-4636-90eb-f30aab3a2d67)
+  Berdasarkan grafik pada fitur `Season` di atas:
+   - `winter` memiliki 5610 data
+   - `Spring` memiliki 2598 data
+   - `Autumn` memiliki 2500 data
+   - `Summer` memiliki 2492 data
+   - 
+- Fitur Location
+  ![uni3](https://github.com/user-attachments/assets/3c9aad89-0559-40bb-bb71-15b57a40b7d0)
+  Berdasarkan grafik pada fitur `Location` di atas:
+   - `inland` memiliki 4301 data
+   - `mountain` memiliki 4297 data
+   - `coastal` memiliki 3091 data
+
+#### Numerical Features
+Menampilkan data numerik dalam bentuk grafik
+![uni numerical](https://github.com/user-attachments/assets/f93825f4-33f0-4f41-8516-4dff3d13a806)
+Berdasarkan grafik diatas, hampir semmua kolom skewnessnya mengarah ke kiri kecuali `Humidity` dan `Atmospheric Pressure`. Sedangkan untuk `Weather Type` datanya terlihat seimbang
+
+### Multivariate Analysis
+Multivariate Analysis menunjukkan hubungan antara dua atau lebih variabel pada data. Multivariate Analysis yang menunjukkan hubungan antara dua variabel biasa disebut sebagai bivariate Analysis. Selanjutnya, kita akan melakukan analisis data pada fitur kategori dan numerik.
+
+#### Categorical Features
+Menampilkan hubungan fitur kategori dengan target `Weather Type`
+```
+cat_features = cuaca.select_dtypes(include='object').columns.to_list()
+
+for col in cat_features:
+  sns.catplot(x=col, y="Weather Type", kind="bar", dodge=False, height = 4, aspect = 3,  data=cuaca, palette="Set3")
+  plt.title("Rata-rata 'Type Cuaca' Relatif terhadap - {}".format(col))
+```
+
+output:
+
+- Fitur `Cloud Cover` dengan `Weather Type`
+  ![multi 1](https://github.com/user-attachments/assets/360d1555-08fd-4d5b-888f-f463ebc04a17)
+- Fitur `Season` dengan `Weather Type`
+  ![multi 2](https://github.com/user-attachments/assets/9bd403eb-ceb2-45fb-855e-faf758c72171)
+- Fitur `Location` dengan `Weather Type`
+  ![multi 3](https://github.com/user-attachments/assets/40492a45-8c6e-483a-8176-f44f3065b0f4)
+
+berdasarkan data grafik di atas:
+1. Pada fitur 'Cloud Cover', ada perbedaan signifikan pada kategori clear yang menandakan adanya hubungan antara 'Cloud Cover' dengan 'Weather Type'
+2. Pada fitur 'Season', rata-rata Tipe cuaca yang muncul hampir sama di kisaran 1,2 - 1,6 menandakan hubungan 'Season' dengan 'Weather Type' rendah
+3. Pada fitur 'Location', rata-rata Tipe cuaca yang juga hampir mirip. Ini juga menandakan rendahnya hubungan antara fitur 'Location' dan 'Weather Type'
+
+#### Numerical Features
+Menampilkan hubungan antar fitur numerik dengan target `Weather Type`
+```
+sns.pairplot(cuaca, diag_kind = 'kde')
+```
+
+output:
+
+![multi numerical](https://github.com/user-attachments/assets/1771947d-c9d7-4c5f-b548-c5cc400b8565)
+Berdasarkan visualisasi data diatas, tidak terlihat adanya hubungan yang signifikan antara fitur dengan target `Weather Type`
+
+Menampilkan nilai korelasi antar fitur dengan target `Weather Type`
+```
+# Mengetahui skor korelasi
+plt.figure(figsize=(10, 8))
+correlation_matrix = cuaca[numerical_features].corr().round(2)
+
+# Untuk menge-print nilai di dalam kotak, gunakan parameter anot=True
+sns.heatmap(data=correlation_matrix, annot=True, cmap='coolwarm', linewidths=0.5, )
+plt.title("Correlation Matrix untuk Fitur Numerik ", size=20)
+plt.tight_layout()
+```
+
+output:
+
+![korelasi](https://github.com/user-attachments/assets/daf1c148-8e9c-4c4b-9420-f2292ea6674e)
+Berdasarkan nilai korelasi di atas `Temperature` dan `Visibilty (km)` adalah fitur yang mempunyai nilai korelasi paling kecil dengan target `Weather Type` dan akan di hapus
+
+Hapus fitur yang tidak memiliki korelasi
+```
+cuaca.drop(['Temperature', 'Visibility (km)'], inplace=True, axis=1)
+cuaca.head()
+```
+
+output:
+
+| Humidity | Wind Speed | Precipitation (%) | Cloud Cover   | Atmospheric Pressure | UV Index | Season | Location | Weather Type |
+|----------|------------|-------------------|---------------|----------------------|----------|--------|----------|--------------|
+| 73       | 9.5        | 82.0              | partly cloudy | 1010.82              | 2        | Winter | inland   | 1            |
+| 96       | 8.5        | 71.0              | partly cloudy | 1011.43              | 7        | Spring | inland   | 0            |
+| 64       | 7.0        | 16.0              | clear         | 1018.72              | 5        | Spring | mountain | 3            |
+| 83       | 1.5        | 82.0              | clear         | 1026.25              | 7        | Spring | coastal  | 3            |
+| 74       | 17.0       | 66.0              | overcast      | 990.67               | 1        | Winter | mountain | 1            |
+
+Penghapusan beberapa fitur yang tidak memiliki korelasi berhasil. Sekarang cek lagi data terbaru
+```
+cuaca.info()
+```
+
+output:
+```
+<class 'pandas.core.frame.DataFrame'>
+Index: 11689 entries, 0 to 13199
+Data columns (total 9 columns):
+ #   Column                Non-Null Count  Dtype  
+---  ------                --------------  -----  
+ 0   Humidity              11689 non-null  int64  
+ 1   Wind Speed            11689 non-null  float64
+ 2   Precipitation (%)     11689 non-null  float64
+ 3   Cloud Cover           11689 non-null  object 
+ 4   Atmospheric Pressure  11689 non-null  float64
+ 5   UV Index              11689 non-null  int64  
+ 6   Season                11689 non-null  object 
+ 7   Location              11689 non-null  object 
+ 8   Weather Type          11689 non-null  int64  
+dtypes: float64(3), int64(3), object(3)
+memory usage: 913.2+ KB
+```
+
+Penghapusan fitur `Temperature` dan `Visibilty (km)` karena memiliki nilai korelasi yang rendah. Berdasarkan data terbaru, tersisa 9 kolom yakni 3 kategorik dan 6 numerik
+
 ## Data Preparation
 
-Pada bagian ini kami akan melakukan tiga tahap persiapan data, yaitu:
+Data preparation merupakan tahapan penting dalam proses pengembangan model machine learning. Ini adalah tahap di mana kita melakukan proses transformasi pada data sehingga menjadi bentuk yang cocok untuk proses pemodelan. Dalam data preparation akan dilakukan 3 tahapan, yakni Encoding Fiitur Kategori, Train-Test-Split dan Standarisasi.
 
-1. Encoding fitur kategori.
-   Data yang akan saya ubah adalah fitur kategori yaitu 'Cloud Cover', 'Location' dan 'Season'. Proses ini dilakukan dengan menggunakan teknik one-hot-encoding agar didapatkan fitur baru yang sesuai sehingga dapat mewakili fitur kategori
+### Encoding Fitur Kategori
+Encoding fitu kategori adalah teknik yang umum dilakukan adalah teknik one-hot-encoding. Library scikit-learn menyediakan fungsi ini untuk mendapatkan fitur baru yang sesuai sehingga dapat mewakili variabel kategori. Kita memiliki tiga variabel kategori dalam dataset kita, yaitu `Cloud Cover`, `Season`, dan `Location`.
 
-2. Pembagian dataset dengan fungsi train_test_split.
-   Saya akan menggunakan proporsi pembagian sebesar 90:10
+Ubah data kategorik
+```
+from sklearn.preprocessing import  OneHotEncoder
+cuaca = pd.concat([cuaca, pd.get_dummies(cuaca['Cloud Cover'], prefix='Cloud Cover')],axis=1)
+cuaca = pd.concat([cuaca, pd.get_dummies(cuaca['Season'], prefix='Season')],axis=1)
+cuaca = pd.concat([cuaca, pd.get_dummies(cuaca['Location'], prefix='Location')],axis=1)
+cuaca.drop(['Cloud Cover','Season','Location'], axis=1, inplace=True)
+cuaca.head()
+```
 
-- Standarisasi.
-  Saya akan menggunakan teknik StandarScaler dari library Scikitlearn, StandardScaler melakukan proses standarisasi fitur dengan mengurangkan mean (nilai rata-rata) kemudian membaginya dengan standar deviasi untuk menggeser distribusi. StandardScaler menghasilkan distribusi dengan standar deviasi sama dengan 1 dan mean sama dengan 0. Sekitar 68% dari nilai akan berada di antara -1 dan 1.
+output:
+
+| Humidity | Wind Speed | Precipitation (%) | Atmospheric Pressure | UV Index | Weather Type | Cloud Cover_clear | Cloud Cover_cloudy | Cloud Cover_overcast | Cloud Cover_partly cloudy | Season_Autumn | Season_Spring | Season_Summer | Season_Winter | Location_coastal | Location_inland | Location_mountain |
+|----------|------------|-------------------|----------------------|----------|--------------|-------------------|--------------------|----------------------|---------------------------|---------------|---------------|---------------|---------------|------------------|-----------------|------------------|
+| 73       | 9.5        | 82.0              | 1010.82              | 2        | 1            | False             | False              | False                | True                      | False         | False         | False         | True          | False            | True            | False            |
+| 96       | 8.5        | 71.0              | 1011.43              | 7        | 0            | False             | False              | False                | True                      | False         | True          | False         | False         | False            | True            | False            |
+| 64       | 7.0        | 16.0              | 1018.72              | 5        | 3            | True              | False              | False                | False                     | False         | True          | False         | False         | False            | False           | True             |
+| 83       | 1.5        | 82.0              | 1026.25              | 7        | 3            | True              | False              | False                | False                     | False         | True          | False         | False         | True             | False           | False            |
+| 74       | 17.0       | 66.0              | 990.67               | 1        | 1            | False             | False              | True                 |
+
+Data kategorik berhasil diubah menggunakan teknik one-hot-encoding
+
+### Train-Test-Split
+Train-Test-Split adalah metode untuk membagi dataset menjadi data latih (train) dan data uji (test). Biasanya data akan dibagi dengan proporsi tertentu. Dalam kasus ini saya akan membagi data menjadi 90:10 dimana 90% untuk training dan 10% untuk testing
+
+```
+from sklearn.model_selection import train_test_split
+
+X = cuaca.drop(['Weather Type'],axis =1)
+y = cuaca['Weather Type']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.1, random_state = 123)
+```
+Lalu cek jumlah sampelnya masing-masing
+```
+print(f'Total # of sample in whole dataset: {len(X)}')
+print(f'Total # of sample in train dataset: {len(X_train)}')
+print(f'Total # of sample in test dataset: {len(X_test)}')
+```
+
+output:
+```
+Total # of sample in whole dataset: 11689
+Total # of sample in train dataset: 10520
+Total # of sample in test dataset: 1169
+```
 
 ## Modeling
 
