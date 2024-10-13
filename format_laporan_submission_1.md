@@ -574,9 +574,9 @@ for name, model in model_dict.items():
 ```
 
 output:
-Akurasi KNN: 0.9076
-Akurasi RF: 0.9512 
-Akurasi Boosting: 0.9222
+`Akurasi KNN`: 0.9076
+`Akurasi RF`: 0.9512 
+`Akurasi Boosting`: 0.9222
 
 Berdasarkan visualisasi dan nilai akurasi pada ketiga model. Kita akan menggunakan algoritma `Random Forest`.
 Selanjutnya kita uji prediksinya menggunakan beberapa nilai dalam data
