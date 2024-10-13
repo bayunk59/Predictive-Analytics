@@ -64,54 +64,35 @@ Berikut adalah tahapan EDA yang dilakukan
 
 1. cek nilai duplikat pada data
 
-```duplicate_rows = cuaca[cuaca.duplicated()]
+```
+duplicate_rows = cuaca[cuaca.duplicated()]
 print("Jumlah baris duplikat:", duplicate_rows.shape[0])
 ```
 
-Output: Tidak terdapat baris duplikay
+Output: Tidak terdapat baris duplikat
 
-2. Exploratory Data Analysis :
+2. cek nilai yang kosong pada data
 
-- Data tersebut berisi 13.200 data dengan 11 fitur dimana 7 numeric dan 4 categorical.
-- Dari data tersebut terdapat outlier sesuai dengan penjelasan di kaggle
-- Saya ubah type data pada target fitur, yaitu Weather Type yang awalnya kategori menjadi numerik agar mudah untuk menemukan korelasi data dengan rincian cloudy: 0, Rainy: 1, Snowy: 2 dan Sunny: 3
-- Setelah saya ubah jumlah tipe datanya berubah menjadi 8 numerik dan 3 kategori
-- Selanjutnya saya melakukan pengecekan jumlah outlier di data numerik dan ditemukan beberapa fitur yang memiliki outlier adalah Temperatur 92 outlier, Wind Speed 404 outlier, Atmospheric Pressure 927 outlier dan Visibility (km) 383 outlier.
-- Karena outliernya banyak, daripada menghapusnya saya akan coba menanganinya dengan cara menggantinya dengan nilai median
+```
+print(cuaca.isnull().sum())
+```
 
-3. Exploratory Data Analysis - Univariate Analysis:
-   a. Categorical
+output:
 
-   - Saya membagi datanya menjadi 2 fitur (numeric dan categorical)
-   - di fitur categorical saya menampilkan jumlah datanya dalam bentuk grafik batang
-   - terlihat overcast menjadi yang paling banyak dalam fitur cloud cover dengan presentase 46,1%
-   - selanjutnya winter pada fitur season memiliki jumlah 5610 dan berbeda dengan 3 season lain yang jumlahnya hampir sama di angka 2500
-   - Untuk fitur location, pengamatan paling banyak diambil di lokasi inland dan mountain dengan jumlah 4800 data, sedangkan coastal hanya 3571 data.
-
-     b. numeric
-
-   - Saya menampilkan semua yang memiliki tipe data numerik dalam sebuah histogram
-   - Terlihat data beberapa nilai yang sangat menonjol dalam data tersebut seperti pada fitur temperatur, di kisaran angka 20 menjadi data yang terbanyak hingga mencapai 1000 data
-   - Pada fitur Humidity juga angak di kisaran 70 menjadi yang terbanyak dengan jumlah hampir 1000 data
-   - Pada fitur Wind Speed di kisaran angka 10 menjadi yang terbanyak melebihi 800 data sedangkan yang lain hanya di jumlah 400 data
-   - Pada percipitation juga terdapat nilai 60 yang memiliki jumlah paling menonjol dengan jumlah 600 data
-   - Pada fitur Atmospheric Pressure juga terlihat jumlah data yang sangat signifikan dengan jumla 1400 data sedangkan yang lain hanya di angka 200 - 700 data
-   - Pada UV index dan Visibility juga terdapat data yang menonjol dengan jumlah 2500 dan 1000 data
-   - Berbeda dengan data yang lain, jumlah Weather Type nya seimbang
-   - Jumlah data yng menonjol ini menurut saya kemungkinan bisa terjadi karena 2 hal:
-     1. Karena jumlah data memang sudah seperti itu
-     2. Atau bisa jadi karena perubahan data pada outlier menjadi median yang membuat jumlah median bertambah
-
-4. Exploratory Data Analysis - Multivariate Analysis:
-   a. Categorical
-   - pada categorical fitur, saya melihat hubungan masing-masing fitur dengan target Weather Type
-   - Pada fitur Cuaca dan location tidak ada perbedaan data yang signifikan, jadi seharusnya tingkat korelasi kedua fitur tersebut dengan Weather type rendah
-   - berbeda dengan fitur cloud cover, ada data clear yang paling berbeda sendiri dan ini menimbulkan kecurigaan saya
-   - Akhirnya saya mencoba mengubah categorical fitur menjadi numerik untuk melihat korelasinya
-   - dari hasil korelasinya didapatkan nilai -0,54 yang menandakan memang ada korelasi tetapi sifatnya negatif.
-   - Karena bernilai negatif, ini menandakan bahwa semakin tinggi tingkat awan (mendung), semakin buruk jenis cuaca yang diprediksi, dan sebaliknya. Hubungan ini berkebalikan dengan data dan akan kami abaikan
-
-b. numeric - Pada numerical fitur, saya menggunakan fungsi pairplot() dan saya juga akan mengobservasi korelasi antara fitur numerik dengan fitur target - Dari hasil korelasi didapatkan bahwa temperatur dan visibility tidak memiliki hubungan dengan target makan akan dihapus untuk mendapatkan permodelan yang lebih baik - Untuk fitur humidity, Wind speed, precipitaion memiliki nilai korelasi negatif - Sedangkan UV Index dan Atmospheric Pressure memiliki nilai korelasi positif dengan nilai 0,35 pada UV Index - Selanjutnya saya membuang fitur Temperature dan Visibility karena tidak ada korelasi dengan target
+```
+Temperature             0
+Humidity                0
+Wind Speed              0
+Precipitation (%)       0
+Cloud Cover             0
+Atmospheric Pressure    0
+UV Index                0
+Season                  0
+Visibility (km)         0
+Location                0
+Weather Type            0
+dtype: int64
+```
 
 ## Data Preparation
 
