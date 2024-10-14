@@ -121,7 +121,7 @@ Ubah tipe data berhasil, tipe data `Weather Type` berubah menjadi numerik dengan
 3 = Sunny
 
 4. Menangani Outlier
-   Outlier adalah titik data yang secara signifikan berada di sebgaian data dalam kumpulan data. Outlier ini bisa muncul karena banyak faktor salah satunya adalah kesalahan pengamatan.
+   Outlier adalah titik data yang secara signifikan berada di sebagaian data dalam kumpulan data. Outlier ini bisa muncul karena banyak faktor salah satunya adalah kesalahan pengamatan.
    - Menampilkan data outlier
      ```
      for column in cuaca.select_dtypes(include=np.number).columns:
@@ -137,8 +137,16 @@ Ubah tipe data berhasil, tipe data `Weather Type` berubah menjadi numerik dengan
      ![outlier5](https://github.com/user-attachments/assets/f7d3f274-a220-45d8-80ba-39b330c48cdd)
      ![outlier7](https://github.com/user-attachments/assets/6bb6db3f-88aa-4cbd-a4e3-85db348acab0)
      
-     berdasarkan boxplot tersebut, ada 4 fitur yang memiliki outlier yakni fitur `Temperature`, `Wind           Speed`, `Athmospheric Pressure`, dan `Visibility (km)`
-   - Outlier pada 4 fitur tersebut perlu dihapus untuk mendapatkan model yang bagus
+     berdasarkan boxplot tersebut, ada 4 fitur yang memiliki outlier yakni fitur `Temperature`, `Wind Speed`, `Athmospheric Pressure`, dan `Visibility (km)`
+
+   - Outlier pada 4 fitur tersebut perlu dihapus untuk mendapatkan model yang bagus, untuk menghapus outlier tersebut kita akan menggunakan metode IQR.
+     IQR adalah singkatan dari Inter Quartile Range, dimana rumusnya adalah `IQR = Q3 -Q1`. Q3 dan Q1 sendiri adalah kuartil dari suatu populasi data, diman terdapat tiga nilai yang membagi distribusi data menjadi empat sebaran. Seperempat dari data berada di bawah kuartil pertama (Q1), setengah dari data berada di bawah kuartil kedua (Q2), dan tiga perempat dari data berada di kuartil ketiga (Q3)
+  
+     Selanjutnya dibuat batas bawah dan batas atas. Untuk membuat batas bawah, kurangi Q1 dengan 1,5 * IQR. Kemudian, untuk membuat batas atas, tambahkan 1.5 * IQR dengan Q3. Dengan persammaan:
+     `Batas bawah = Q1 - 1.5 * IQR`
+     
+     `Batas atas = Q3 + 1.5 * IQR`
+     
      ```
      numeric_cuaca = cuaca.select_dtypes(include=np.number)
 
@@ -516,6 +524,16 @@ Berikut merupakan parameter-parameter yang digunakan pada potongan kode di atas.
 
 ## Evaluation
 Pada proses evaluasi kita akan menggunakan metrik MSE atau Mean Squared Error yang akan menghitung jumlah selisih kuadrat rata-rata nilai yang sebenarnya dengan nilai prediksi.
+MSE didefinisikan dalam persamaan berikut 
+![MSE](https://github.com/user-attachments/assets/e16d77c4-1c0c-45b7-a7f0-ea8eb6b3d967)
+
+Keterangan:
+
+N = jumlah dataset
+
+yi = nilai sebenarnya
+
+y_pred = nilai prediksi
 
 Namun, sebelum menghitung nilai MSE dalam model, kita perlu melakukan proses scaling fitur numerik pada data uji. Untuk proses scaling, implementasikan kode berikut:
 ```
