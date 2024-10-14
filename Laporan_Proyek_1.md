@@ -131,6 +131,7 @@ Ubah tipe data berhasil, tipe data `Weather Type` berubah menjadi numerik dengan
      plt.show()
      ```
      output:
+     
      ![outlier1](https://github.com/user-attachments/assets/233ce168-9edd-4823-b346-9c895d9435b4)
      ![outlier3](https://github.com/user-attachments/assets/1e0c1417-06d9-47eb-bc20-9cb80bc10512)
      ![outlier5](https://github.com/user-attachments/assets/f7d3f274-a220-45d8-80ba-39b330c48cdd)
