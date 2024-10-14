@@ -650,4 +650,4 @@ output:
 |-----|--------|--------------|-------------|-------------------|
 | 7259| 2 | 1.9 | 2.0 | 1.7 |
 
-Berdasarkan prediksinya juga, Random forest memiliki hasil prediksi terbaik
+Berdasarkan prediksinya juga, Random forest memiliki hasil prediksi terbaik.
