@@ -32,8 +32,8 @@ Goals/tujuan dari poyek ini adalah:
 
 Beberapa solusi yang akan coba terapkan adalah:
 
-1. Melakukan eksplorasi fitur manggunakan analisis univariat dan multivariat untuk menemukan hubungan antar fitur baik yang data numerik maupun data kategorikal.
-2. Untuk mendapatkan data yang bersih sebelum di buat permodelan. Dilakukan preparation data yang terdiri dari Encoding Fitur Kategori, Train-Test-Spit dan Standarisasi.
+1. Melakukan eksplorasi fitur menggunakan analisis univariat dan multivariat untuk menemukan hubungan antar fitur baik yang data numerik maupun data kategorikal.
+2. Untuk mendapatkan data yang bersih sebelum di buat permodelan. Dilakukan preparation data yang terdiri dari Menghapus outlier, Menghapus fitur dengan korelasi yang rendah, Encoding Fitur Kategori, Train-Test-Spit dan Standarisasi.
 3. Permodelan akan dilakukan dengan 3 algoritma model, yaitu `K-Nearest Neighbors (KNN)`, `Random Forest (RF)` dan `Boosting Algorithm` lalu akan dipilih model terbaik berdasarkan nilai akurasinya.
 
 ## Data Understanding
@@ -120,55 +120,6 @@ Ubah tipe data berhasil, tipe data `Weather Type` berubah menjadi numerik dengan
 2 = Snowy
 3 = Sunny
 
-4. Menangani Outlier
-   Outlier adalah titik data yang secara signifikan berada di sebgaian data dalam kumpulan data. Outlier ini bisa muncul karena banyak faktor salah satunya adalah kesalahan pengamatan.
-
-   - Menampilkan data outlier
-
-     ```
-     for column in cuaca.select_dtypes(include=np.number).columns:
-     plt.figure(figsize=(8, 6))
-     sns.boxplot(x=cuaca[column])
-     plt.title(f'Boxplot of {column}')
-     plt.show()
-     ```
-
-     output:
-
-     ![outlier1](https://github.com/user-attachments/assets/233ce168-9edd-4823-b346-9c895d9435b4)
-     ![outlier3](https://github.com/user-attachments/assets/1e0c1417-06d9-47eb-bc20-9cb80bc10512)
-     ![outlier5](https://github.com/user-attachments/assets/f7d3f274-a220-45d8-80ba-39b330c48cdd)
-     ![outlier7](https://github.com/user-attachments/assets/6bb6db3f-88aa-4cbd-a4e3-85db348acab0)
-
-     berdasarkan boxplot tersebut, ada 4 fitur yang memiliki outlier yakni fitur `Temperature`, `Wind           Speed`, `Athmospheric Pressure`, dan `Visibility (km)`
-
-   - Outlier pada 4 fitur tersebut perlu dihapus untuk mendapatkan model yang bagus
-
-     ```
-     numeric_cuaca = cuaca.select_dtypes(include=np.number)
-
-     Q1 = numeric_cuaca.quantile(0.25)
-     Q3 = numeric_cuaca.quantile(0.75)
-     IQR = Q3 - Q1
-     lower_bound = Q1 - 1.5 * IQR
-     upper_bound = Q3 + 1.5 * IQR
-
-     cuaca = cuaca[~((numeric_cuaca < lower_bound) | (numeric_cuaca > upper_bound)).any(axis=1)]
-     ```
-
-     Outlier telah berhasil dihapus.
-
-   - Menampilkan data terbaru setelah outliers dihapus
-
-     ```
-     cuaca.shape
-     ```
-
-     output:
-     `(11689, 11)`
-
-     Jumlah data terbaru sekarang adalah 11689 data
-
 ### Univariate Analysis
 
 Univariate Analysis adalah jenis analisis data yang memeriksa satu variabel saja. Tujuannya uuntuk menggambarkan data dan menemukan pola distribusi data
@@ -197,34 +148,45 @@ count.plot(kind='bar', title=feature);
 
 output:
 
-- Fitur CLour Cover
-  ![uni1](https://github.com/user-attachments/assets/1a74554d-e6a8-4e0f-8f06-68d8e4dcebfb)
+- Fitur CLoud Cover
+
+  ![uni1](https://github.com/user-attachments/assets/1c62f168-76d5-44a6-990a-c5b6bf59a5ff)
+
   Berdasarkan grafik pada fitur `Cloud Cover` di atas:
 
-  - `overcast` memiliki 5467 data
-  - `party cloud` memiliki 4072 data
-  - `clear` memiliki 2084 data
-  - `cloudy` memiliki 57 data
+  - `overcast` memiliki 6090 data
+  - `party cloud` memiliki 4560 data
+  - `clear` memiliki 2139 data
+  - `cloudy` memiliki 411 data
 
 - Fitur Season
-  ![uni2](https://github.com/user-attachments/assets/67ef8c38-2fed-4636-90eb-f30aab3a2d67)
+
+  ![uni2](https://github.com/user-attachments/assets/f04c412d-3046-4e0d-9834-bb047958d5a7)
+
   Berdasarkan grafik pada fitur `Season` di atas:
+
   - `winter` memiliki 5610 data
   - `Spring` memiliki 2598 data
   - `Autumn` memiliki 2500 data
   - `Summer` memiliki 2492 data
   -
+
 - Fitur Location
-  ![uni3](https://github.com/user-attachments/assets/3c9aad89-0559-40bb-bb71-15b57a40b7d0)
+
+  ![uni3](https://github.com/user-attachments/assets/da112527-bf26-4cac-aeba-ccd6c6fbd05b)
+
   Berdasarkan grafik pada fitur `Location` di atas:
-  - `inland` memiliki 4301 data
-  - `mountain` memiliki 4297 data
-  - `coastal` memiliki 3091 data
+
+  - `inland` memiliki 4816 data
+  - `mountain` memiliki 4813 data
+  - `coastal` memiliki 3571 data
 
 #### Numerical Features
 
 Menampilkan data numerik dalam bentuk grafik
-![uni numerical](https://github.com/user-attachments/assets/f93825f4-33f0-4f41-8516-4dff3d13a806)
+
+![uni numerical](https://github.com/user-attachments/assets/a6a663b5-f533-4e42-a905-1040c13340c7)
+
 Berdasarkan grafik diatas, hampir semmua kolom skewnessnya mengarah ke kiri kecuali `Humidity` dan `Atmospheric Pressure`. Sedangkan untuk `Weather Type` datanya terlihat seimbang
 
 ### Multivariate Analysis
@@ -246,11 +208,13 @@ for col in cat_features:
 output:
 
 - Fitur `Cloud Cover` dengan `Weather Type`
-  ![multi 1](https://github.com/user-attachments/assets/360d1555-08fd-4d5b-888f-f463ebc04a17)
+  ![multi 1](https://github.com/user-attachments/assets/8543201f-78c2-4345-a697-42e8f3f5a5cf)
+
 - Fitur `Season` dengan `Weather Type`
-  ![multi 2](https://github.com/user-attachments/assets/9bd403eb-ceb2-45fb-855e-faf758c72171)
+  ![multi 2](https://github.com/user-attachments/assets/8469e1d3-f83c-49f8-b588-8418720e86db)
+
 - Fitur `Location` dengan `Weather Type`
-  ![multi 3](https://github.com/user-attachments/assets/40492a45-8c6e-483a-8176-f44f3065b0f4)
+  ![multi 3](https://github.com/user-attachments/assets/322d408a-3b8a-4df5-b087-127175edbf5a)
 
 berdasarkan data grafik di atas:
 
@@ -268,7 +232,8 @@ sns.pairplot(cuaca, diag_kind = 'kde')
 
 output:
 
-![multi numerical](https://github.com/user-attachments/assets/1771947d-c9d7-4c5f-b548-c5cc400b8565)
+![multi numerical](https://github.com/user-attachments/assets/451b0c8a-33e5-46b0-99c9-eb63b61db90d)
+
 Berdasarkan visualisasi data diatas, tidak terlihat adanya hubungan yang signifikan antara fitur dengan target `Weather Type`
 
 Menampilkan nilai korelasi antar fitur dengan target `Weather Type`
@@ -286,58 +251,84 @@ plt.tight_layout()
 
 output:
 
-![korelasi](https://github.com/user-attachments/assets/daf1c148-8e9c-4c4b-9420-f2292ea6674e)
-Berdasarkan nilai korelasi di atas `Temperature` dan `Visibilty (km)` adalah fitur yang mempunyai nilai korelasi paling kecil dengan target `Weather Type` dan akan di hapus
+![korelasi](https://github.com/user-attachments/assets/075bd81c-e3a9-492b-acd9-a75562c64a69)
 
-Hapus fitur yang tidak memiliki korelasi
+Berdasarkan nilai korelasi di atas `Temperature`, `Atmospheric Pressure` dan `Visibilty (km)` adalah fitur yang mempunyai nilai korelasi paling kecil dengan target `Weather Type` dan akan di hapus
+
+## Data Preparation
+
+Data preparation merupakan tahapan penting dalam proses pengembangan model machine learning. Ini adalah tahapan dilakukannya proses transformasi pada data sehingga menjadi bentuk yang cocok untuk proses pemodelan. Dalam data preparation akan dilakukan 3 tahapan, yakni Encoding Fiitur Kategori, Train-Test-Split dan Standarisasi.
+
+### Menangani Outlier
+
+Outlier adalah titik data yang secara signifikan berada di sebgaian data dalam kumpulan data. Outlier ini bisa muncul karena banyak faktor salah satunya adalah kesalahan pengamatan.
+
+- Menampilkan data outlier
+
+  ```
+  for column in cuaca.select_dtypes(include=np.number).columns:
+  plt.figure(figsize=(8, 6))
+  sns.boxplot(x=cuaca[column])
+  plt.title(f'Boxplot of {column}')
+  plt.show()
+  ```
+
+  output:
+
+  ![outlier1](https://github.com/user-attachments/assets/233ce168-9edd-4823-b346-9c895d9435b4)
+  ![outlier3](https://github.com/user-attachments/assets/1e0c1417-06d9-47eb-bc20-9cb80bc10512)
+  ![outlier5](https://github.com/user-attachments/assets/f7d3f274-a220-45d8-80ba-39b330c48cdd)
+  ![outlier7](https://github.com/user-attachments/assets/6bb6db3f-88aa-4cbd-a4e3-85db348acab0)
+
+  berdasarkan boxplot tersebut, ada 4 fitur yang memiliki outlier yakni fitur `Temperature`, `Wind           Speed`, `Athmospheric Pressure`, dan `Visibility (km)`
+
+- Outlier pada 4 fitur tersebut perlu dihapus untuk mendapatkan model yang bagus
+
+  ```
+  numeric_cuaca = cuaca.select_dtypes(include=np.number)
+
+  Q1 = numeric_cuaca.quantile(0.25)
+  Q3 = numeric_cuaca.quantile(0.75)
+  IQR = Q3 - Q1
+  lower_bound = Q1 - 1.5 * IQR
+  upper_bound = Q3 + 1.5 * IQR
+
+  cuaca = cuaca[~((numeric_cuaca < lower_bound) | (numeric_cuaca > upper_bound)).any(axis=1)]
+  ```
+
+  Outlier telah berhasil dihapus.
+
+- Menampilkan data terbaru setelah outliers dihapus
+
+  ```
+  cuaca.shape
+  ```
+
+  output:
+  `(11689, 11)`
+
+  Jumlah data terbaru sekarang adalah 11689 data
+
+### Hapus Kolom dengan Korelasi Terendah
+
+bagian ini adalah proses penghapusan fitur-fitur yang memiliki korelasi rendah terhadap variabel target dari dataset. Langkah ini diambil berdasarkan asumsi bahwa fitur dengan korelasi rendah tidak memberikan kontribusi signifikan terhadap prediksi yang dibuat oleh model.
 
 ```
-cuaca.drop(['Temperature', 'Visibility (km)'], inplace=True, axis=1)
+cuaca.drop(['Temperature', 'Atmospheric Pressure','Visibility (km)'], inplace=True, axis=1)
 cuaca.head()
 ```
 
 output:
 
-| Humidity | Wind Speed | Precipitation (%) | Cloud Cover   | Atmospheric Pressure | UV Index | Season | Location | Weather Type |
-| -------- | ---------- | ----------------- | ------------- | -------------------- | -------- | ------ | -------- | ------------ |
-| 73       | 9.5        | 82.0              | partly cloudy | 1010.82              | 2        | Winter | inland   | 1            |
-| 96       | 8.5        | 71.0              | partly cloudy | 1011.43              | 7        | Spring | inland   | 0            |
-| 64       | 7.0        | 16.0              | clear         | 1018.72              | 5        | Spring | mountain | 3            |
-| 83       | 1.5        | 82.0              | clear         | 1026.25              | 7        | Spring | coastal  | 3            |
-| 74       | 17.0       | 66.0              | overcast      | 990.67               | 1        | Winter | mountain | 1            |
+|     | Humidity | Wind Speed | Precipitation (%) | Cloud Cover   | UV Index | Season | Location | Weather Type |
+| --- | -------- | ---------- | ----------------- | ------------- | -------- | ------ | -------- | ------------ |
+| 0   | 73       | 9.5        | 82.0              | partly cloudy | 2        | Winter | inland   | 1            |
+| 1   | 96       | 8.5        | 71.0              | partly cloudy | 7        | Spring | inland   | 0            |
+| 2   | 64       | 7.0        | 16.0              | clear         | 5        | Spring | mountain | 3            |
+| 3   | 83       | 1.5        | 82.0              | clear         | 7        | Spring | coastal  | 3            |
+| 4   | 74       | 17.0       | 66.0              | overcast      | 1        | Winter | mountain | 1            |
 
-Penghapusan beberapa fitur yang tidak memiliki korelasi berhasil. Sekarang cek lagi data terbaru
-
-```
-cuaca.info()
-```
-
-output:
-
-```
-<class 'pandas.core.frame.DataFrame'>
-Index: 11689 entries, 0 to 13199
-Data columns (total 9 columns):
- #   Column                Non-Null Count  Dtype
----  ------                --------------  -----
- 0   Humidity              11689 non-null  int64
- 1   Wind Speed            11689 non-null  float64
- 2   Precipitation (%)     11689 non-null  float64
- 3   Cloud Cover           11689 non-null  object
- 4   Atmospheric Pressure  11689 non-null  float64
- 5   UV Index              11689 non-null  int64
- 6   Season                11689 non-null  object
- 7   Location              11689 non-null  object
- 8   Weather Type          11689 non-null  int64
-dtypes: float64(3), int64(3), object(3)
-memory usage: 913.2+ KB
-```
-
-Penghapusan fitur `Temperature` dan `Visibilty (km)` karena memiliki nilai korelasi yang rendah. Berdasarkan data terbaru, tersisa 9 kolom yakni 3 kategorik dan 6 numerik
-
-## Data Preparation
-
-Data preparation merupakan tahapan penting dalam proses pengembangan model machine learning. Ini adalah tahapan dilakukannya proses transformasi pada data sehingga menjadi bentuk yang cocok untuk proses pemodelan. Dalam data preparation akan dilakukan 3 tahapan, yakni Encoding Fiitur Kategori, Train-Test-Split dan Standarisasi.
+Penghapusan fitur `Temperature` , `Atmospheric Pressure` dan `Visibilty (km)` karena memiliki nilai korelasi yang rendah telah berhasil. Berdasarkan data terbaru, tersisa 8 kolom yakni 3 kategorik dan 5 numerik
 
 ### Encoding Fitur Kategori
 
@@ -346,7 +337,6 @@ Encoding fitu kategori adalah teknik yang umum dilakukan adalah teknik one-hot-e
 Ubah data kategorik
 
 ```
-from sklearn.preprocessing import  OneHotEncoder
 cuaca = pd.concat([cuaca, pd.get_dummies(cuaca['Cloud Cover'], prefix='Cloud Cover')],axis=1)
 cuaca = pd.concat([cuaca, pd.get_dummies(cuaca['Season'], prefix='Season')],axis=1)
 cuaca = pd.concat([cuaca, pd.get_dummies(cuaca['Location'], prefix='Location')],axis=1)
@@ -371,27 +361,9 @@ Data kategorik berhasil diubah menggunakan teknik one-hot-encoding
 Train-Test-Split adalah metode untuk membagi dataset menjadi data latih (train) dan data uji (test). Biasanya data akan dibagi dengan proporsi tertentu. Dalam kasus ini saya akan membagi data menjadi 90:10 dimana 90% untuk training dan 10% untuk testing
 
 ```
-from sklearn.model_selection import train_test_split
-
 X = cuaca.drop(['Weather Type'],axis =1)
 y = cuaca['Weather Type']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.1, random_state = 123)
-```
-
-Lalu cek jumlah sampelnya masing-masing
-
-```
-print(f'Total # of sample in whole dataset: {len(X)}')
-print(f'Total # of sample in train dataset: {len(X_train)}')
-print(f'Total # of sample in test dataset: {len(X_test)}')
-```
-
-output:
-
-```
-Total # of sample in whole dataset: 11689
-Total # of sample in train dataset: 10520
-Total # of sample in test dataset: 1169
 ```
 
 Berdasarkan output diatas kita telah sukses melakukan proses Train-Test-Split, terlihat bahwa:
@@ -408,9 +380,7 @@ StandardScaler melakukan proses standarisasi fitur dengan mengurangkan mean (nil
 Pada kasus ini kita hanya akan melakukan standarisai pada data latih, kemudian pada tahap evaluasi kita akan melakukan standarisasi pada data uji.
 
 ```
-from sklearn.preprocessing import StandardScaler
-
-numerical_features = ['Humidity', 'Wind Speed', 'Precipitation (%)','Atmospheric Pressure', 'UV Index']
+numerical_features = ['Humidity', 'Wind Speed', 'Precipitation (%)', 'UV Index']
 scaler = StandardScaler()
 scaler.fit(X_train[numerical_features])
 X_train[numerical_features] = scaler.transform(X_train.loc[:, numerical_features])
@@ -418,13 +388,13 @@ X_train[numerical_features].head()
 ```
 
 output:
-| | Humidity | Wind Speed | Precipitation (%) | Atmospheric Pressure | UV Index |
-|-----|------------|------------|-------------------|----------------------|-----------|
-| 5908| -0.795473 | -1.373182 | -1.463063 | 1.492121 | 0.658528 |
-| 2175| 1.007657 | 0.315739 | 0.531440 | 0.757302 | -0.728680 |
-| 621| -0.589401 | -0.306495 | -1.120258 | 1.014102 | -0.451238 |
-| 2363| 1.059175 | -0.662057 | 1.092394 | 1.706378 | 2.045736 |
-| 3887| -1.671279 | -1.106510 | -1.182586 | 0.300168 | 0.381087 |
+| | Humidity | Wind Speed | Precipitation (%) | UV Index |
+|------|------------|------------|-------------------|-----------|
+| 5908 | -0.795473 | -1.373182 | -1.463063 | 0.658528 |
+| 2175 | 1.007657 | 0.315739 | 0.531440 | -0.728680 |
+| 621 | -0.589401 | -0.306495 | -1.120258 | -0.451238 |
+| 2363 | 1.059175 | -0.662057 | 1.092394 | 2.045736 |
+| 3887 | -1.671279 | -1.106510 | -1.182586 | 0.381087 |
 
 Mengecek nilai mean dan standar deviasi setelah proses standarisasi
 
@@ -434,16 +404,16 @@ X_train[numerical_features].describe().round(4)
 
 output:
 
-|       | Humidity   | Wind Speed | Precipitation (%) | Atmospheric Pressure | UV Index   |
-| ----- | ---------- | ---------- | ----------------- | -------------------- | ---------- |
-| count | 10520.0000 | 10520.0000 | 10520.0000        | 10520.0000           | 10520.0000 |
-| mean  | 0.0000     | -0.0000    | -0.0000           | -0.0000              | 0.0000     |
-| std   | 1.0000     | 1.0000     | 1.0000            | 1.0000               | 1.0000     |
-| min   | -2.5471    | -1.6399    | -1.6189           | -3.3554              | -1.0061    |
-| 25%   | -0.5379    | -0.7509    | -1.0579           | -0.8084              | -0.7287    |
-| 50%   | 0.0288     | -0.1287    | 0.1263            | 0.1312               | -0.4512    |
-| 75%   | 0.7501     | 0.7602     | 0.9054            | 0.7751               | 0.6585     |
-| max   | 2.0380     | 2.9825     | 1.7780            | 3.3214               | 2.8781     |
+|       | Humidity   | Wind Speed | Precipitation (%) | UV Index   |
+| ----- | ---------- | ---------- | ----------------- | ---------- |
+| count | 10520.0000 | 10520.0000 | 10520.0000        | 10520.0000 |
+| mean  | 0.0000     | -0.0000    | -0.0000           | 0.0000     |
+| std   | 1.0000     | 1.0000     | 1.0000            | 1.0000     |
+| min   | -2.5471    | -1.6399    | -1.6189           | -1.0061    |
+| 25%   | -0.5379    | -0.7509    | -1.0579           | -0.7287    |
+| 50%   | 0.0288     | -0.1287    | 0.1263            | -0.4512    |
+| 75%   | 0.7501     | 0.7602     | 0.9054            | 0.6585     |
+| max   | 2.0380     | 2.9825     | 1.7780            | 2.8781     |
 
 Seperti yang disebutkan sebelumnya, proses ini akan mengubah nilai rata-rata (mean) menjadi 0 dan standar deviasi menjadi 1.
 
@@ -495,9 +465,6 @@ KNN adalah algoritma yang relatif sederhana dibandingkan dengan algoritma lain. 
 KNN bekerja dengan membandingkan jarak satu sampel ke sampel pelatihan lain dengan memilih sejumlah k tetangga terdekat (dengan k adalah sebuah angka positif). Nah, itulah mengapa algoritma ini dinamakan K-nearest neighbor (sejumlah k tetangga terdekat). KNN bisa digunakan untuk kasus klasifikasi dan regresi. Pada modul ini, kita akan menggunakannya untuk kasus regresi.
 
 ```
-from sklearn.neighbors import KNeighborsRegressor
-from sklearn.metrics import mean_squared_error
-
 knn = KNeighborsRegressor(n_neighbors=10)
 knn.fit(X_train, y_train)
 
@@ -513,9 +480,6 @@ Algoritma random forest adalah salah satu algoritma supervised learning. Ia dapa
 Random forest merupakan salah satu model machine learning yang termasuk ke dalam kategori ensemble (group) learning. Apa itu model ensemble? Sederhananya, ia merupakan model prediksi yang terdiri dari beberapa model dan bekerja secara bersama-sama.
 
 ```
-# Impor library yang dibutuhkan
-from sklearn.ensemble import RandomForestRegressor
-
 # buat model prediksi
 RF = RandomForestRegressor(n_estimators=50, max_depth=16, random_state=55, n_jobs=-1)
 RF.fit(X_train, y_train)
@@ -541,8 +505,6 @@ Dilihat dari caranya memperbaiki kesalahan pada model sebelumnya, algoritma boos
     Pada modul ini, kita akan menggunakan metode adaptive boosting. Salah satu metode adaptive boosting yang terkenal adalah AdaBoost, dikenalkan oleh Freund and Schapire (1995)
 
 ```
-from sklearn.ensemble import AdaBoostRegressor
-
 boosting = AdaBoostRegressor(learning_rate=0.05, random_state=55)
 boosting.fit(X_train, y_train)
 models.loc['train_mse','Boosting'] = mean_squared_error(y_pred=boosting.predict(X_train), y_true=y_train)
@@ -594,9 +556,9 @@ mse
 output:
 | | Train | Test |
 |-----------|-----------|-----------|
-| KNN | 0.000108 | 0.000141 |
-| RF | 0.000016 | 0.000075 |
-| Boosting | 0.000164 | 0.000177 |
+| KNN | 0.00015 | 0.00019 |
+| RF | 0.000032 | 0.000131 |
+| Boosting | 0.000225 | 0.000236 |
 
 Untuk memudahkan, mari kita plot metrik tersebut dengan bar chart. Implementasikan kode di bawah ini:
 
@@ -607,14 +569,11 @@ ax.grid(zorder=0)
 ```
 
 output:
-![grafik model](https://github.com/user-attachments/assets/053529c2-6b8c-43f9-82b8-7c792dd6604e)
+![grafik model](https://github.com/user-attachments/assets/6ca1b949-39e1-4ef3-b060-ce67dd053e63)
 
 Selanjutnya kita akan melihat nilai akurasi di tiap model
 
 ```
-# melihat nilai akurasi dari tiap model
-from sklearn.metrics import accuracy_score
-
 # Buat dictionary untuk setiap algoritma yang digunakan
 model_dict = {'KNN': knn, 'RF': RF, 'Boosting': boosting}
 
@@ -628,12 +587,14 @@ for name, model in model_dict.items():
 ```
 
 output:
-`Akurasi KNN`: 0.9076
-`Akurasi RF`: 0.9512
-`Akurasi Boosting`: 0.9222
 
-Berdasarkan visualisasi dan nilai akurasi pada ketiga model. Kita akan menggunakan algoritma `Random Forest`.
-Selanjutnya kita uji prediksinya menggunakan beberapa nilai dalam data
+`Akurasi KNN`: 0.8717
+
+`Akurasi RF`: 0.9213
+
+`Akurasi Boosting`: 0.6878
+
+Lalu Prediksi modelnya
 
 ```
 # Uji data
@@ -650,4 +611,4 @@ output:
 |-----|--------|--------------|-------------|-------------------|
 | 7259| 2 | 1.9 | 2.0 | 1.7 |
 
-Berdasarkan prediksinya juga, Random forest memiliki hasil prediksi terbaik.
+Berdasarkan prediksinya juga, Random forest memiliki hasil prediksi terbaik
