@@ -608,7 +608,8 @@ pd.DataFrame(pred_dict)
 
 output:
 | | y_true | prediksi_KNN | prediksi_RF | prediksi_Boosting |
-|-----|--------|--------------|-------------|-------------------|
-| 7259| 2 | 1.9 | 2.0 | 1.7 |
+|------|--------|--------------|-------------|-------------------|
+| 7259| 2| 1.9| 1.9| 1.5|
 
-Berdasarkan prediksinya juga, Random forest memiliki hasil prediksi terbaik
+Berdasarkan hasil akurasinya. permodelan menggunakan `K-Nearest Neighbors` mendapatkan nilai akurasi 87,17%, lalu permodelan dengan `Random Forest` mendapatkan akurasi 92,13% dan yang terakhir pada permodela `Boosting Algorithm` mendapatkan nilai akurasi 68,78%. Selain itu, hasil prediksi `K-Nearest Neighbors` dan `Random Forest` menjadi yang paling mendekati nilai sebenarnya.
+Maka dari itu permodelan yang akan digunakan untuk mengklasifikasikan cuaca adalah model `Random Forest`, semoga dengan model ini bisa membantu menentukan klasifikasi cuaca yang terbaik sesuai data.
