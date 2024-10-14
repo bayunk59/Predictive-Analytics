@@ -17,6 +17,14 @@ import matplotlib.pyplot as plt
 import pandas as pd
 # %matplotlib inline
 import seaborn as sns
+from sklearn.preprocessing import  OneHotEncoder
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.metrics import mean_squared_error
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import AdaBoostRegressor
+from sklearn.metrics import accuracy_score
 
 # Load data
 !pip install kaggle
@@ -94,7 +102,113 @@ cuaca.describe()
 # cek data lagi
 cuaca.info()
 
-"""## Menangani Outliers
+"""## Univariate Analysis
+
+Univariate Analysis adalah jenis analisis data yang memeriksa satu variabel saja. Tujuannya uuntuk menggambarkan data dan menemukan pola distribusi data
+
+Sebelum mulai analysis kita bagi datanya menjadi 2 bagian, yakni `numerical_fitur` untuk data numerik dan `categorical_features` untuk data kategorik
+"""
+
+# bagi menjadi 2 fitur
+numerical_features = ['Temperature', 'Humidity', 'Wind Speed', 'Precipitation (%)', 'Atmospheric Pressure', 'UV Index', 'Visibility (km)', 'Weather Type']
+categorical_features = ['Cloud Cover', 'Season', 'Location']
+
+"""### Categorical Features"""
+
+# Fitur CLoud Cover
+feature = categorical_features[0]
+count = cuaca[feature].value_counts()
+percent = 100*cuaca[feature].value_counts(normalize=True)
+df = pd.DataFrame({'jumlah sampel':count, 'persentase':percent.round(1)})
+print(df)
+count.plot(kind='bar', title=feature);
+
+"""Berdasarkan grafik pada fitur `Cloud Cover` di atas:
+- `overcast` memiliki 6090 data
+- `party cloud` memiliki 4560 data
+- `clear` memiliki 2139 data
+- `cloudy` memiliki 411 data
+"""
+
+# Fitur Season
+feature = categorical_features[1]
+count = cuaca[feature].value_counts()
+percent = 100*cuaca[feature].value_counts(normalize=True)
+df = pd.DataFrame({'jumlah sampel':count, 'persentase':percent.round(1)})
+print(df)
+count.plot(kind='bar', title=feature);
+
+"""Berdasarkan grafik pada fitur `Season` di atas:
+- `winter` memiliki 5610 data
+- `Spring` memiliki 2598 data
+- `Autumn` memiliki 2500 data
+- `Summer` memiliki 2492 data
+"""
+
+# Fitur Location
+feature = categorical_features[2]
+count = cuaca[feature].value_counts()
+percent = 100*cuaca[feature].value_counts(normalize=True)
+df = pd.DataFrame({'jumlah sampel':count, 'persentase':percent.round(1)})
+print(df)
+count.plot(kind='bar', title=feature);
+
+"""Berdasarkan grafik pada fitur `Location` di atas:
+- `inland` memiliki 4816 data
+- `mountain` memiliki 4813 data
+- `coastal` memiliki 3571 data
+
+### Numerical Features
+"""
+
+cuaca.hist(bins=50, figsize=(20,15))
+plt.show()
+
+"""Berdasarkan grafik diatas, hampir semmua kolom skewnessnya mengarah ke kiri kecuali `Humidity` dan `Atmospheric Pressure`. Sedangkan untuk `Weather Type` datanya terlihat seimbang
+
+## Multivariate Analysis
+
+Multivariate Analysis menunjukkan hubungan antara dua atau lebih variabel pada data. Multivariate Analysis yang menunjukkan hubungan antara dua variabel biasa disebut sebagai bivariate Analysis. Selanjutnya, kita akan melakukan analisis data pada fitur kategori dan numerik.
+
+### Categorical Features
+"""
+
+cat_features = cuaca.select_dtypes(include='object').columns.to_list()
+
+for col in cat_features:
+  sns.catplot(x=col, y="Weather Type", kind="bar", dodge=False, height = 4, aspect = 3,  data=cuaca, palette="Set3")
+  plt.title("Rata-rata 'Type Cuaca' Relatif terhadap - {}".format(col))
+
+"""berdasarkan data grafik di atas:
+1. Pada fitur 'Cloud Cover', ada perbedaan signifikan pada kategori clear yang menandakan adanya hubungan antara 'Cloud Cover' dengan 'Weather Type'
+2. Pada fitur 'Season', rata-rata Tipe cuaca yang muncul hampir sama di kisaran 1,2 - 1,6 menandakan hubungan 'Season' dengan 'Weather Type' rendah
+3. Pada fitur 'Location', rata-rata Tipe cuaca yang juga hampir mirip. Ini juga menandakan rendahnya hubungan antara fitur 'Location' dan 'Weather Type'
+
+### Numerical Features
+"""
+
+# Mengamati hubungan antar fitur numerik dengan fungsi pairplot()
+sns.pairplot(cuaca, diag_kind = 'kde')
+
+"""Berdasarkan visualisasi data diatas, tidak terlihat adanya hubungan yang signifikan antara fitur dengan target `Weather Type`"""
+
+# Mengetahui skor korelasi
+plt.figure(figsize=(10, 8))
+correlation_matrix = cuaca[numerical_features].corr().round(2)
+
+# Untuk menge-print nilai di dalam kotak, gunakan parameter anot=True
+sns.heatmap(data=correlation_matrix, annot=True, cmap='coolwarm', linewidths=0.5, )
+plt.title("Correlation Matrix untuk Fitur Numerik ", size=20)
+plt.tight_layout()
+
+"""Berdasarkan nilai korelasi di atas
+- `Temperature`, `Atmospheric Pressure` dan `Visibilty (km)` adalah fitur yang mempunyai nilai korelasi paling kecil dengan target `Weather Type` dan akan di hapus
+
+# Data Preparation
+
+Data preparation merupakan tahapan penting dalam proses pengembangan model machine learning. Ini adalah tahap di mana kita melakukan proses transformasi pada data sehingga menjadi bentuk yang cocok untuk proses pemodelan.
+
+## Menangani Outliers
 
 Outlier adalah titik data yang secara signifikan berada di sebgaian data dalam kumpulan data. Outlier ini bisa muncul karena banyak faktor salah satunya adalah kesalahan pengamatan.
 """
@@ -130,127 +244,24 @@ cuaca.shape
 
 """Jumlah data sekarang menjadi 11689 dari 13200 data
 
-## Univariate Analysis
+## Hapus Kolom dengan Korelasi Terendah
 
-Univariate Analysis adalah jenis analisis data yang memeriksa satu variabel saja. Tujuannya uuntuk menggambarkan data dan menemukan pola distribusi data
-
-Sebelum mulai analysis kita bagi datanya menjadi 2 bagian, yakni `numerical_fitur` untuk data numerik dan `categorical_features` untuk data kategorik
-"""
-
-# bagi menjadi 2 fitur
-numerical_features = ['Temperature', 'Humidity', 'Wind Speed', 'Precipitation (%)', 'Atmospheric Pressure', 'UV Index', 'Visibility (km)', 'Weather Type']
-categorical_features = ['Cloud Cover', 'Season', 'Location']
-
-"""### Categorical Features"""
-
-# Fitur CLoud Cover
-feature = categorical_features[0]
-count = cuaca[feature].value_counts()
-percent = 100*cuaca[feature].value_counts(normalize=True)
-df = pd.DataFrame({'jumlah sampel':count, 'persentase':percent.round(1)})
-print(df)
-count.plot(kind='bar', title=feature);
-
-"""Berdasarkan grafik pada fitur `Cloud Cover` di atas:
-- `overcast` memiliki 5467 data
-- `party cloud` memiliki 4072 data
-- `clear` memiliki 2084 data
-- `cloudy` memiliki 57 data
-"""
-
-# Fitur Season
-feature = categorical_features[1]
-count = cuaca[feature].value_counts()
-percent = 100*cuaca[feature].value_counts(normalize=True)
-df = pd.DataFrame({'jumlah sampel':count, 'persentase':percent.round(1)})
-print(df)
-count.plot(kind='bar', title=feature);
-
-"""Berdasarkan grafik pada fitur `Season` di atas:
-- `winter` memiliki 5610 data
-- `Spring` memiliki 2598 data
-- `Autumn` memiliki 2500 data
-- `Summer` memiliki 2492 data
-"""
-
-# Fitur Location
-feature = categorical_features[2]
-count = cuaca[feature].value_counts()
-percent = 100*cuaca[feature].value_counts(normalize=True)
-df = pd.DataFrame({'jumlah sampel':count, 'persentase':percent.round(1)})
-print(df)
-count.plot(kind='bar', title=feature);
-
-"""Berdasarkan grafik pada fitur `Location` di atas:
-- `inland` memiliki 4301 data
-- `mountain` memiliki 4297 data
-- `coastal` memiliki 3091 data
-
-### Numerical Features
-"""
-
-cuaca.hist(bins=50, figsize=(20,15))
-plt.show()
-
-"""Berdasarkan grafik diatas, hampir semmua kolom skewnessnya mengarah ke kiri kecuali `Humidity` dan `Atmospheric Pressure`. Sedangkan untuk `Weather Type` datanya terlihatseimbang
-
-## Multivariate Analysis
-
-Multivariate Analysis menunjukkan hubungan antara dua atau lebih variabel pada data. Multivariate Analysis yang menunjukkan hubungan antara dua variabel biasa disebut sebagai bivariate Analysis. Selanjutnya, kita akan melakukan analisis data pada fitur kategori dan numerik.
-
-### Categorical Features
-"""
-
-cat_features = cuaca.select_dtypes(include='object').columns.to_list()
-
-for col in cat_features:
-  sns.catplot(x=col, y="Weather Type", kind="bar", dodge=False, height = 4, aspect = 3,  data=cuaca, palette="Set3")
-  plt.title("Rata-rata 'Type Cuaca' Relatif terhadap - {}".format(col))
-
-"""berdasarkan data grafik di atas:
-1. Pada fitur 'Cloud Cover', ada perbedaan signifikan pada kategori clear yang menandakan adanya hubungan antara 'Cloud Cover' dengan 'Weather Type'
-2. Pada fitur 'Season', rata-rata Tipe cuaca yang muncul hampir sama di kisaran 1,2 - 1,6 menandakan hubungan 'Season' dengan 'Weather Type' rendah
-3. Pada fitur 'Location', rata-rata Tipe cuaca yang juga hampir mirip. Ini juga menandakan rendahnya hubungan antara fitur 'Location' dan 'Weather Type'
-
-### Numerical Features
-"""
-
-# Mengamati hubungan antar fitur numerik dengan fungsi pairplot()
-sns.pairplot(cuaca, diag_kind = 'kde')
-
-"""Berdasarkan visualisasi data diatas, tidak terlihat adanya huubungan yang signifikan antara fitur dengan target `Weather Type`"""
-
-# Mengetahui skor korelasi
-plt.figure(figsize=(10, 8))
-correlation_matrix = cuaca[numerical_features].corr().round(2)
-
-# Untuk menge-print nilai di dalam kotak, gunakan parameter anot=True
-sns.heatmap(data=correlation_matrix, annot=True, cmap='coolwarm', linewidths=0.5, )
-plt.title("Correlation Matrix untuk Fitur Numerik ", size=20)
-plt.tight_layout()
-
-"""Berdasarkan nilai korelasi di atas
-- `Temperature` dan `Visibilty (km)` adalah fitur yang mempunyai nilai korelasi paling kecil dengan target `Weather Type` dan akan di hapus
+bagian ini adalah proses penghapusan fitur-fitur yang memiliki korelasi rendah terhadap variabel target dari dataset. Langkah ini diambil berdasarkan asumsi bahwa fitur dengan korelasi rendah tidak memberikan kontribusi signifikan terhadap prediksi yang dibuat oleh model.
 """
 
 # Ada beberapa yang tidak memilik korelasi dengan Weather Type, maka dihilangkan
-cuaca.drop(['Temperature', 'Visibility (km)'], inplace=True, axis=1)
+cuaca.drop(['Temperature', 'Atmospheric Pressure','Visibility (km)'], inplace=True, axis=1)
 cuaca.head()
 
 cuaca.info()
 
-"""Penghapusan fitur `Temperature` dan `Visibilty (km)` karena memiliki nilai korelasi yang rendah. Berdasarkan data terbaru, tersisa 9 kolom yakni 3 kategorik dan 6 numerik
-
-# Data Preparation
-
-Data preparation merupakan tahapan penting dalam proses pengembangan model machine learning. Ini adalah tahap di mana kita melakukan proses transformasi pada data sehingga menjadi bentuk yang cocok untuk proses pemodelan.
+"""Penghapusan fitur `Temperature` , `Atmospheric Pressure` dan `Visibilty (km)` karena memiliki nilai korelasi yang rendah. Berdasarkan data terbaru, tersisa 8 kolom yakni 3 kategorik dan 5 numerik
 
 ## Encoding FItur Kategori
 
 Encoding fitu kategori adalah teknik yang umum dilakukan adalah teknik one-hot-encoding. Library scikit-learn menyediakan fungsi ini untuk mendapatkan fitur baru yang sesuai sehingga dapat mewakili variabel kategori. Kita memiliki tiga variabel kategori dalam dataset kita, yaitu `Cloud Cover`, `Season`, dan `Location`.
 """
 
-from sklearn.preprocessing import  OneHotEncoder
 cuaca = pd.concat([cuaca, pd.get_dummies(cuaca['Cloud Cover'], prefix='Cloud Cover')],axis=1)
 cuaca = pd.concat([cuaca, pd.get_dummies(cuaca['Season'], prefix='Season')],axis=1)
 cuaca = pd.concat([cuaca, pd.get_dummies(cuaca['Location'], prefix='Location')],axis=1)
@@ -263,8 +274,6 @@ Train-Test-Split adalah metode untuk membagi dataset menjadi data latih (train) 
 """
 
 # Membagi 90:10 (10% untuk data uji/test)
-from sklearn.model_selection import train_test_split
-
 X = cuaca.drop(['Weather Type'],axis =1)
 y = cuaca['Weather Type']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.1, random_state = 123)
@@ -288,9 +297,7 @@ Pada kasus ini kita hanya akan melakukan standarisai pada data latih, kemudian p
 """
 
 # Standarisasi data latih (train) dengan StandardCaler (utk numerik)
-from sklearn.preprocessing import StandardScaler
-
-numerical_features = ['Humidity', 'Wind Speed', 'Precipitation (%)','Atmospheric Pressure', 'UV Index']
+numerical_features = ['Humidity', 'Wind Speed', 'Precipitation (%)', 'UV Index']
 scaler = StandardScaler()
 scaler.fit(X_train[numerical_features])
 X_train[numerical_features] = scaler.transform(X_train.loc[:, numerical_features])
@@ -345,9 +352,6 @@ models = pd.DataFrame(index=['train_mse', 'test_mse'],
 ## Model K-Nearest Neighbor (K-NN)
 """
 
-from sklearn.neighbors import KNeighborsRegressor
-from sklearn.metrics import mean_squared_error
-
 knn = KNeighborsRegressor(n_neighbors=10)
 knn.fit(X_train, y_train)
 
@@ -357,9 +361,6 @@ models.loc['train_mse','knn'] = mean_squared_error(y_pred = knn.predict(X_train)
 
 ## Model Random Forest
 """
-
-# Impor library yang dibutuhkan
-from sklearn.ensemble import RandomForestRegressor
 
 # buat model prediksi
 RF = RandomForestRegressor(n_estimators=50, max_depth=16, random_state=55, n_jobs=-1)
@@ -376,8 +377,6 @@ models.loc['train_mse','RandomForest'] = mean_squared_error(y_pred=RF.predict(X_
 
 ## Model Boosting Algorithm
 """
-
-from sklearn.ensemble import AdaBoostRegressor
 
 boosting = AdaBoostRegressor(learning_rate=0.05, random_state=55)
 boosting.fit(X_train, y_train)
@@ -428,8 +427,6 @@ plt.xticks(rotation=45)
 """Selanjutnya kita akan melihat nilai akurasi di tiap model"""
 
 # melihat nilai akurasi dari tiap model
-from sklearn.metrics import accuracy_score
-
 # Buat dictionary untuk setiap algoritma yang digunakan
 model_dict = {'KNN': knn, 'RF': RF, 'Boosting': boosting}
 
@@ -441,7 +438,7 @@ for name, model in model_dict.items():
     accuracy = accuracy_score(y_test, y_pred_class)
     print(f"Akurasi {name}: {accuracy:.4f}")
 
-"""Berdasrkan visualisasi dan nilai akurasi pada ketiga model. Kita akan menggunakan algoritma `Random Forest`.
+"""Berdasarkan visualisasi dan nilai akurasi pada ketiga model. Kita mendapatkan nilai tertinggi pada `Random Forest` dengan akurasi 92.13%.
 
 Selanjutnya kita uji prediksinya menggunakan beberapa nilai dalam data
 """
@@ -454,4 +451,4 @@ for name, model in model_dict.items():
 
 pd.DataFrame(pred_dict)
 
-"""Berdasarkan prediksinya juga, Random forest memiliki hasil prediksi terbaik"""
+"""Berdasarkan prediksinya juga, `Random forest` memiliki hasil prediksi terbaik"""
