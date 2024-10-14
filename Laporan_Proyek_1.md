@@ -32,7 +32,7 @@ Goals/tujuan dari poyek ini adalah:
 
 Beberapa solusi yang akan coba terapkan adalah:
 
-1. Melakukan eksplorasi fitur manggunakan analisis univariat dan multivariat untuk menemukan hubungan antar fitur baik yang data numerik maupun data kategorikal.
+1. Melakukan eksplorasi fitur menggunakan analisis univariat dan multivariat untuk menemukan hubungan antar fitur baik yang data numerik maupun data kategorikal.
 2. Untuk mendapatkan data yang bersih sebelum di buat permodelan. Dilakukan preparation data yang terdiri dari Menghapus outlier, Menghapus fitur dengan korelasi yang rendah, Encoding Fitur Kategori, Train-Test-Spit dan Standarisasi.
 3. Permodelan akan dilakukan dengan 3 algoritma model, yaitu `K-Nearest Neighbors (KNN)`, `Random Forest (RF)` dan `Boosting Algorithm` lalu akan dipilih model terbaik berdasarkan nilai akurasinya.
 
@@ -594,7 +594,7 @@ output:
 `Akurasi Boosting`: 0.6878
 
 
-Berdasarkan visualisasi dan nilai akurasi pada ketiga model. Kita mendapatkan nilai tertinggi pada `Random Forest` dengan akurasi 92.13%.
+Lalu Prediksi modelnya
 
 ```
 # Uji data
@@ -612,4 +612,5 @@ output:
 |  7259|       2|           1.9|          1.9|                1.5|
 
 
-Berdasarkan prediksinya juga, Random forest memiliki hasil prediksi terbaik
+Berdasarkan hasil akurasinya. permodelan menggunakan `K-Nearest Neighbors` mendapatkan nilai akurasi 87,17%, lalu permodelan dengan `Random Forest` mendapatkan akurasi 92,13% dan yang terakhir pada permodela `Boosting Algorithm` mendapatkan nilai akurasi 68,78%. Selain itu, hasil prediksi `K-Nearest Neighbors` dan `Random Forest` menjadi yang paling mendekati nilai sebenarnya.
+Maka dari itu permodelan yang akan digunakan untuk mengklasifikasikan cuaca adalah model `Random Forest`, semoga dengan model ini bisa membantu menentukan klasifikasi cuaca yang terbaik sesuai data.
