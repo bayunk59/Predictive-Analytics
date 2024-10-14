@@ -556,6 +556,16 @@ Berikut merupakan parameter-parameter yang digunakan pada potongan kode di atas.
 ## Evaluation
 
 Pada proses evaluasi kita akan menggunakan metrik MSE atau Mean Squared Error yang akan menghitung jumlah selisih kuadrat rata-rata nilai yang sebenarnya dengan nilai prediksi.
+MSE didefinisikan dalam persamaan berikut
+![MSE](https://github.com/user-attachments/assets/e16d77c4-1c0c-45b7-a7f0-ea8eb6b3d967)
+
+Keterangan:
+
+N = jumlah dataset
+
+yi = nilai sebenarnya
+
+y_pred = nilai prediksi
 
 Namun, sebelum menghitung nilai MSE dalam model, kita perlu melakukan proses scaling fitur numerik pada data uji. Untuk proses scaling, implementasikan kode berikut:
 
