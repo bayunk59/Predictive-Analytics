@@ -379,6 +379,7 @@ StandardScaler melakukan proses standarisasi fitur dengan mengurangkan mean (nil
 
 Pada kasus ini kita hanya akan melakukan standarisai pada data latih dan data uji.
 
+1. Standarisasi pada data latih
 ```
 scaler = StandardScaler()
 X_train[:] = scaler.fit_transform(X_train[:])
@@ -412,6 +413,42 @@ output:
 | 50%   | 0.0288     | -0.1287    | 0.1263            | 0.0147      | 0.1312               | -0.4512    | 0.1067     |
 | 75%   | 0.7501     | 0.7602     | 0.9054            | 0.9817      | 0.7751               | 0.6585     | 0.9666     |
 | max   | 2.0380     | 2.9825     | 1.7780            | 0.9817      | 3.3214               | 2.8781     | 0.9666     |
+
+2. Standarisasi pada data uji
+```
+scaler = StandardScaler()
+X_test[:] = scaler.fit_transform(X_test[:])
+X_test.head()
+```
+
+output:
+|      | Humidity | Wind Speed | Precipitation (%) | Cloud Cover | Atmospheric Pressure | UV Index | Season   |
+|------|----------|------------|-------------------|-------------|----------------------|----------|----------|
+| 7259 | 0.972994 | 0.424815   | 1.368710          | -0.005879   | -0.599656            | -0.700018| 0.955664 |
+| 6013 | 0.047125 | -0.842505  | -0.898904         | -0.987591   | 0.602839             | 0.421354 | 0.955664 |
+| 11517| 0.201436 | 1.601611   | 1.463194          | -1.969304   | 1.692384             | -0.980361| 0.093649 |
+| 1452 | 1.384491 | -0.389891  | -0.017054         | -0.005879   | -1.605448            | -0.980361| 0.955664 |
+| 6753 | -0.158624| 1.511088   | 0.770312          | 0.975834    | -0.050273            | -0.139332| -1.630381|
+
+
+Mengecek nilai mean dan standar deviasi setelah proses standarisasi
+
+```
+X_test.describe().round(4)
+```
+
+output:
+
+|           | Humidity | Wind Speed | Precipitation (%) | Cloud Cover | Atmospheric Pressure | UV Index | Season |
+|-----------|----------|------------|-------------------|-------------|----------------------|----------|--------|
+| count     | 1169.0000| 1169.0000  | 1169.0000         | 1169.0000   | 1169.0000            | 1169.0000| 1169.0000 |
+| mean      | -0.0000  | 0.0000     | -0.0000           | 0.0000      | 0.0000               | -0.0000  | 0.0000   |
+| std       | 1.0004   | 1.0004     | 1.0004            | 1.0004      | 1.0004               | 1.0004   | 1.0004   |
+| min       | -2.5762  | -1.6572    | -1.6548           | -1.9693     | -3.1622              | -0.9804  | -1.6304  |
+| 25%       | -0.5187  | -0.7520    | -1.0564           | -0.0059     | -0.7894              | -0.7000  | -0.7684  |
+| 50%       | 0.0471   | -0.1183    | 0.1089            | -0.0059     | 0.0988               | -0.4197  | 0.0936   |
+| 75%       | 0.7672   | 0.7869     | 0.8648            | 0.9758      | 0.7765               | 0.4214   | 0.9557   |
+| max       | 2.0017   | 2.8689     | 1.7781            | 0.9758      | 3.2476               | 2.9444   | 0.9557   |
 
 Seperti yang disebutkan sebelumnya, proses ini akan mengubah nilai rata-rata (mean) menjadi 0 dan standar deviasi menjadi 1.
 
@@ -447,13 +484,6 @@ Pada tahap ini, saya akan mengembangkan model machine learning dengan tiga algor
      - Waktu pelatihan yang lama: Karena model dilatih secara berurutan, pelatihan bisa memakan waktu lebih lama.
      - Memerlukan tuning parameter: Hyperparameter harus diatur dengan cermat untuk performa yang optimal.
 
-Sebelum dimulainya proses modelling, mari siapkan terlebih dahulu data frame untuk analisis ketiga model tersebut.
-
-```
-models = pd.DataFrame(index=['train_mse', 'test_mse'],
-                      columns=['KNN', 'RandomForest', 'Boosting'])
-```
-
 Tahap ini hanya digunakan untuk melatih data training dan menyimpan data testing dari semua model untuk tahap evaluasi yang akan dibahas di Modul Evaluasi Model
 
 ### Model K-Nearest Neighbor (KNN)
@@ -463,10 +493,9 @@ KNN adalah algoritma yang relatif sederhana dibandingkan dengan algoritma lain. 
 KNN bekerja dengan membandingkan jarak satu sampel ke sampel pelatihan lain dengan memilih sejumlah k tetangga terdekat (dengan k adalah sebuah angka positif). Nah, itulah mengapa algoritma ini dinamakan K-nearest neighbor (sejumlah k tetangga terdekat). KNN bisa digunakan untuk kasus klasifikasi dan regresi. Pada modul ini, kita akan menggunakannya untuk kasus regresi.
 
 ```
-knn = KNeighborsRegressor(n_neighbors=10)
+knn = KNeighborsClassifier(n_neighbors=10)
 knn.fit(X_train, y_train)
-
-models.loc['train_mse','knn'] = mean_squared_error(y_pred = knn.predict(X_train), y_true=y_train)
+knn_predictions = knn.predict(X_test)
 ```
 
 pada tahapan ini kita akan melatih data dengan KNN, kita menggunakan `n_neighbors`= 10 tetangga dan metric Euclidean untuk mengukur jarak antara titik.
@@ -478,11 +507,9 @@ Algoritma random forest adalah salah satu algoritma supervised learning. Ia dapa
 Random forest merupakan salah satu model machine learning yang termasuk ke dalam kategori ensemble (group) learning. Apa itu model ensemble? Sederhananya, ia merupakan model prediksi yang terdiri dari beberapa model dan bekerja secara bersama-sama.
 
 ```
-# buat model prediksi
-RF = RandomForestRegressor(n_estimators=50, max_depth=16, random_state=55, n_jobs=-1)
+RF = RandomForestClassifier(n_estimators=50, max_depth=16, random_state=55, n_jobs=-1)
 RF.fit(X_train, y_train)
-
-models.loc['train_mse','RandomForest'] = mean_squared_error(y_pred=RF.predict(X_train), y_true=y_train)
+RF_predictions = RF.predict(X_test)
 ```
 
 Berikut adalah parameter-parameter yang digunakan:
@@ -503,9 +530,9 @@ Dilihat dari caranya memperbaiki kesalahan pada model sebelumnya, algoritma boos
     Pada modul ini, kita akan menggunakan metode adaptive boosting. Salah satu metode adaptive boosting yang terkenal adalah AdaBoost, dikenalkan oleh Freund and Schapire (1995)
 
 ```
-boosting = AdaBoostRegressor(learning_rate=0.05, random_state=55)
+boosting = AdaBoostClassifier(learning_rate=0.05, random_state=55)
 boosting.fit(X_train, y_train)
-models.loc['train_mse','Boosting'] = mean_squared_error(y_pred=boosting.predict(X_train), y_true=y_train)
+boosting_predictions = boosting.predict(X_test)
 ```
 
 Berikut merupakan parameter-parameter yang digunakan pada potongan kode di atas.
@@ -515,100 +542,40 @@ Berikut merupakan parameter-parameter yang digunakan pada potongan kode di atas.
 
 ## Evaluation
 
-Pada proses evaluasi kita akan menggunakan metrik MSE atau Mean Squared Error yang akan menghitung jumlah selisih kuadrat rata-rata nilai yang sebenarnya dengan nilai prediksi.
-MSE didefinisikan dalam persamaan berikut
-![MSE](https://github.com/user-attachments/assets/e16d77c4-1c0c-45b7-a7f0-ea8eb6b3d967)
+Pada proses evaluasi kita akan menggunakan metrik `Accuracy`, `Precision`, `Recall` dan `F1-Score` untuk menentukan peforma mana yang terbaik. berikut penjelasannya,
 
-Keterangan:
+1. `Accuracy` adalah roporsi dari prediksi yang benar terhadap total jumlah data. Ini adalah metrik paling sederhana untuk mengevaluasi model klasifikasi.
+   
+   ![accuracy](https://github.com/user-attachments/assets/1aaffaa4-8dde-4285-9712-e6ec6c13ddc3)
 
-N = jumlah dataset
+- True Positive (TP): Prediksi positif yang benar.
+- True Negative (TN): Prediksi negatif yang benar.
+- False Positive (FP): Prediksi positif yang salah (kesalahan tipe I).
+- False Negative (FN): Prediksi negatif yang salah (kesalahan tipe II).
 
-yi = nilai sebenarnya
+Akurasi bagus jika data seimbang, tetapi jika data tidak seimbang (misalnya lebih banyak kelas negatif daripada kelas positif), akurasi bisa menyesatkan.
 
-y_pred = nilai prediksi
+3. `Precision` adalah proporsi prediksi positif yang benar terhadap seluruh prediksi positif yang dibuat oleh model.
 
-Namun, sebelum menghitung nilai MSE dalam model, kita perlu melakukan proses scaling fitur numerik pada data uji. Untuk proses scaling, implementasikan kode berikut:
+![precision](https://github.com/user-attachments/assets/d4ef8767-3c82-43a0-9341-7925f7ead6ce)
 
-```
-X_test.loc[:, numerical_features] = scaler.transform(X_test[numerical_features])
-```
+- Digunakan saat kita ingin meminimalkan False Positive. Misalnya, dalam diagnosa penyakit, kita ingin memastikan bahwa hasil positif memang benar-benar positif (tidak ada kesalahan positif palsu).
+- Cocok digunakan ketika kesalahan positif palsu sangat mahal atau berbahaya.
 
-Proses scaling diatas dilakukan terhadap data uji. Hal ini harus dilakukan agar skala antara data latih dan data uji sama dan kita bisa melakukan evaluasi. Selanjutnya adalah melakukan evaluasi pada ketiga model dengan metrik MSE.
+3. `Recall` adalah proporsi dari prediksi positif yang benar terhadap seluruh sampel yang benar-benar positif.
 
-```
-# Buat variabel mse yang isinya adalah dataframe nilai mse data train dan test pada masing-masing algoritma
-mse = pd.DataFrame(columns=['train', 'test'], index=['KNN','RF','Boosting'])
+   ![Recall](https://github.com/user-attachments/assets/c934fc3a-3779-4855-bedb-cdc5b954d49c)
 
-# Buat dictionary untuk setiap algoritma yang digunakan
-model_dict = {'KNN': knn, 'RF': RF, 'Boosting': boosting}
+-Recall penting ketika kita ingin meminimalkan False Negative. Misalnya, dalam skrining penyakit berbahaya seperti kanker, kita ingin mengidentifikasi sebanyak mungkin kasus positif, sehingga recall harus tinggi.
+- Cocok digunakan ketika kesalahan negatif palsu lebih kritis.
 
-# Hitung Mean Squared Error masing-masing algoritma pada data train dan test
-for name, model in model_dict.items():
-    mse.loc[name, 'train'] = mean_squared_error(y_true=y_train, y_pred=model.predict(X_train))/1e3
-    mse.loc[name, 'test'] = mean_squared_error(y_true=y_test, y_pred=model.predict(X_test))/1e3
+4. `F1-Score` adalah harmonic mean dari Precision dan Recall. Ini adalah metrik yang baik ketika ada ketidakseimbangan antara Precision dan Recall. F1-Score memberikan nilai keseimbangan antara keduanya.
 
-# Panggil mse
-mse
-```
+   ![F1](https://github.com/user-attachments/assets/41a89953-7989-4318-b88e-56698bd8b1c6)
 
-output:
-| | Train | Test |
-|-----------|------------|------------|
-| KNN | 0.000098 | 0.000131 |
-| RF | 0.000018 | 0.000080 |
-| Boosting | 0.000165 | 0.000177 |
+- `F1-Score` berguna jika kita memiliki dataset yang tidak seimbang, di mana kita ingin menjaga keseimbangan antara Precision dan Recall.
+- F1 lebih rendah jika salah satu dari Precision atau Recall rendah, karena ini merupakan rata-rata harmonik yang lebih memperhatikan nilai yang rendah dibandingkan rata-rata biasa.
 
-Untuk memudahkan, mari kita plot metrik tersebut dengan bar chart. Implementasikan kode di bawah ini:
-
-```
-fig, ax = plt.subplots()
-mse.sort_values(by='test', ascending=False).plot(kind='barh', ax=ax, zorder=3)
-ax.grid(zorder=0)
-plt.xticks(rotation=45)
-```
-
-output:
-![grafik model](https://github.com/user-attachments/assets/cdfcfee8-e189-4962-9042-e01d12513fa2)
-
-Selanjutnya kita akan melihat nilai akurasi di tiap model
-
-```
-# Buat dictionary untuk setiap algoritma yang digunakan
-model_dict = {'KNN': knn, 'RF': RF, 'Boosting': boosting}
-
-# Hitung akurasi masing-masing algoritma pada data test
-for name, model in model_dict.items():
-    y_pred = model.predict(X_test)
-    # Konversi prediksi menjadi kelas (bulatkan ke bilangan bulat terdekat)
-    y_pred_class = np.round(y_pred).astype(int)
-    accuracy = accuracy_score(y_test, y_pred_class)
-    print(f"Akurasi {name}: {accuracy:.4f}")
-```
-
-output:
-
-`Akurasi KNN`: 0.9145
-
-`Akurasi RF`: 0.9461
-
-`Akurasi Boosting`: 0.9247
-
-Lalu Prediksi modelnya
-
-```
-# Uji data
-prediksi = X_test.iloc[:1].copy()
-pred_dict = {'y_true':y_test[:1]}
-for name, model in model_dict.items():
-    pred_dict['prediksi_'+name] = model.predict(prediksi).round(1)
-
-pd.DataFrame(pred_dict)
-```
-
-output:
-| | y_true | prediksi_KNN | prediksi_RF | prediksi_Boosting |
-|------|--------|--------------|-------------|-------------------|
-| 7259 | 2 | 1.7 | 2.0 | 1.7 |
 
 Berdasarkan hasil akurasinya. permodelan menggunakan `K-Nearest Neighbors` mendapatkan nilai akurasi 91,45%, lalu permodelan dengan `Random Forest` mendapatkan akurasi 94,61% dan yang terakhir pada permodela `Boosting Algorithm` mendapatkan nilai akurasi 92,47%. Selain itu, hasil prediksi `K-Nearest Neighbors` dan `Random Forest` menjadi yang paling mendekati nilai sebenarnya.
 Maka dari itu permodelan yang akan digunakan untuk mengklasifikasikan cuaca adalah model `Random Forest`, semoga dengan model ini bisa membantu menentukan klasifikasi cuaca yang terbaik sesuai data.
