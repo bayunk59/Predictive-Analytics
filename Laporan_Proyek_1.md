@@ -578,8 +578,29 @@ lalu saat kita plot grafik menjadi
 
 ![grafik model](https://github.com/user-attachments/assets/a2d016cb-54dd-4b30-a288-11fae6f617c0)
 
+selanjutnya kita akan melihat nilai akurasi model
+```
+model_dict = {'KNN': knn, 'RF': RF, 'Boosting': boosting}
 
-Berdasarkan hasil akurasinya. permodelan menggunakan `K-Nearest Neighbors` mendapatkan nilai akurasi 91,45%, lalu permodelan dengan `Random Forest` mendapatkan akurasi 94,61% dan yang terakhir pada permodela `Boosting Algorithm` mendapatkan nilai akurasi 92,47%. Selain itu, hasil prediksi `K-Nearest Neighbors` dan `Random Forest` menjadi yang paling mendekati nilai sebenarnya.
+for name, model in model_dict.items():
+    y_pred = model.predict(X_test)
+    y_pred_class = np.round(y_pred).astype(int)
+    accuracy = accuracy_score(y_test, y_pred_class)
+    print(f"Akurasi {name}: {accuracy:.4f}")
+```
+
+hasilnya adalah
+`Akurasi KNN`: 0,9213
+`Akurasi RF`: 0,9478
+`Akurasi Boosting`: 0,8127 
+
+ Selanjutnya kita uji prediksinya menggunakan beberapa nilai dalam data dan mendapatkan hasil prediksi sebagai berikut
+| y_true | prediksi_KNN | prediksi_RF | prediksi_Boosting |
+|--------|--------------|-------------|-------------------|
+| Cloudy | Snowy        | Cloudy      | Rainy             |
+
+
+Berdasarkan hasil akurasinya. permodelan menggunakan `K-Nearest Neighbors` mendapatkan nilai akurasi 92,13%, lalu permodelan dengan `Random Forest` mendapatkan akurasi 94,78% dan yang terakhir pada permodela `Boosting Algorithm` mendapatkan nilai akurasi 81,27%. Selain itu, hasil prediksi `K-Nearest Neighbors` dan `Random Forest` menjadi yang paling mendekati nilai sebenarnya.
 Maka dari itu permodelan yang akan digunakan untuk mengklasifikasikan cuaca adalah model `Random Forest`, semoga dengan model ini bisa membantu menentukan klasifikasi cuaca yang terbaik sesuai data.
 
 Antara `UV Index` dan `Weather Type` memiliki nilai korelasi 0,41 menunjukkan adanya korelasi positif sedang antara kedua variabel tersebut. Korelasi positif berarti bahwa ketika `UV Index` meningkat, kemungkinan besar `Weather Type` juga akan berubah ke arah yang lebih tinggi.
