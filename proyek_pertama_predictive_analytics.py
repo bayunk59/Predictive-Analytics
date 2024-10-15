@@ -278,7 +278,7 @@ cuaca.head()
 
 cuaca.info()
 
-"""Penghapusan fitur `Temperature` , `Atmospheric Pressure` dan `Visibilty (km)` karena memiliki nilai korelasi yang rendah. Berdasarkan data terbaru, tersisa 8 kolom
+"""Penghapusan fitur `Temperature` ,`Visibilty (km)`, `Location` karena memiliki nilai korelasi yang rendah. Berdasarkan data terbaru, tersisa 8 kolom
 
 ## Train-Test-Split
 
@@ -308,8 +308,8 @@ StandardScaler melakukan proses standarisasi fitur dengan mengurangkan mean (nil
 Pada kasus ini kita hanya akan melakukan standarisai pada data latih, kemudian pada tahap evaluasi kita akan melakukan standarisasi pada data uji.
 """
 
-# Standarisasi data latih (train) dengan StandardCaler (utk numerik)
-numerical_features = ['Humidity', 'Wind Speed', 'Precipitation (%)', 'UV Index']
+# Standarisasi data latih (train) dengan StandardCaler
+numerical_features = ['Humidity', 'Wind Speed', 'Precipitation (%)', 'Cloud Cover', 'Atmospheric Pressure', 'UV Index', 'Season']
 scaler = StandardScaler()
 scaler.fit(X_train[numerical_features])
 X_train[numerical_features] = scaler.transform(X_train.loc[:, numerical_features])
