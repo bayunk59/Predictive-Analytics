@@ -33,7 +33,7 @@ Goals/tujuan dari poyek ini adalah:
 Beberapa solusi yang akan coba terapkan adalah:
 
 1. Melakukan eksplorasi fitur menggunakan analisis univariat dan multivariat untuk menemukan hubungan antar fitur baik yang data numerik maupun data kategorikal.
-2. Untuk mendapatkan data yang bersih sebelum di buat permodelan. Dilakukan preparation data yang terdiri dari Cek duplikat nilai, cek missing value, Menghapus outlier, Menghapus fitur dengan korelasi yang rendah, Encoding Fitur Kategori, Train-Test-Spit dan Standarisasi.
+2. Untuk mendapatkan data yang bersih sebelum di buat permodelan. Dilakukan preparation data yang terdiri dari Menghapus outlier, Menghapus fitur dengan korelasi yang rendah, Encoding Fitur Kategori, Train-Test-Spit dan Standarisasi.
 3. Permodelan akan dilakukan dengan 3 algoritma model, yaitu `K-Nearest Neighbors (KNN)`, `Random Forest (RF)` dan `Boosting Algorithm` lalu akan dipilih model terbaik berdasarkan nilai akurasinya.
 
 ## Data Understanding
@@ -61,6 +61,39 @@ Tahapan yang akan saya lakukan adalah:
 Exploratory data analysis atau sering disingkat EDA merupakan proses investigasi awal pada data untuk menganalisis karakteristik, menemukan pola, anomali, dan memeriksa asumsi pada data. Teknik ini biasanya menggunakan bantuan statistik dan representasi grafis atau visualisasi.
 
 Berikut adalah tahapan EDA yang dilakukan
+- cek nilai duplikat pada data
+
+```
+duplicate_rows = cuaca[cuaca.duplicated()]
+print("Jumlah baris duplikat:", duplicate_rows.shape[0])
+```
+
+Output: Tidak terdapat baris duplikat
+
+- cek missing value pada data
+
+```
+print(cuaca.isnull().sum())
+```
+
+output:
+
+```
+Temperature             0
+Humidity                0
+Wind Speed              0
+Precipitation (%)       0
+Cloud Cover             0
+Atmospheric Pressure    0
+UV Index                0
+Season                  0
+Visibility (km)         0
+Location                0
+Weather Type            0
+dtype: int64
+```
+
+Tidak terdapat missing value
 
 ### Univariate Analysis
 
@@ -208,38 +241,6 @@ Berdasarkan visualisasi data diatas, tidak terlihat adanya hubungan yang signifi
 ## Data Preparation
 
 Data preparation merupakan tahapan penting dalam proses pengembangan model machine learning. Ini adalah tahapan dilakukannya proses transformasi pada data sehingga menjadi bentuk yang cocok untuk proses pemodelan. Dalam data preparation akan dilakukan 3 tahapan, yakni Encoding Fiitur Kategori, Train-Test-Split dan Standarisasi.
-
-### cek nilai duplikat pada data
-
-```
-duplicate_rows = cuaca[cuaca.duplicated()]
-print("Jumlah baris duplikat:", duplicate_rows.shape[0])
-```
-
-Output: Tidak terdapat baris duplikat
-
-### cek missing value pada data
-
-```
-print(cuaca.isnull().sum())
-```
-
-output:
-
-```
-Temperature             0
-Humidity                0
-Wind Speed              0
-Precipitation (%)       0
-Cloud Cover             0
-Atmospheric Pressure    0
-UV Index                0
-Season                  0
-Visibility (km)         0
-Location                0
-Weather Type            0
-dtype: int64
-```
 
 ### Menangani Outlier
 
@@ -570,40 +571,56 @@ output:
 
 |           | Train   | Test    |
 |-----------|---------|---------|
-| KNN       | 0.000941| 0.000921|
-| RF        | 0.000990| 0.000948|
-| Boosting  | 0.000801| 0.000813|
+| KNN       | 94.12%  | 92.13%  |
+| RF        | 99.05%  | 94.78%  |
+| Boosting  | 80.14%  | 81.27%  |
 
-lalu saat kita plot grafik menjadi 
-
-![grafik model](https://github.com/user-attachments/assets/a2d016cb-54dd-4b30-a288-11fae6f617c0)
-
-selanjutnya kita akan melihat nilai akurasi model
+selanjutnya kita akan melihat nilai `Accuracy`, `Precision`, `Recall` dan `F1-Score` pada ketiga model
 ```
-model_dict = {'KNN': knn, 'RF': RF, 'Boosting': boosting}
+# Calculate metrics for each model
+model_metrics = {model: calculate_metrics(y_true, predictions) for model, predictions in models.items()}
 
-for name, model in model_dict.items():
-    y_pred = model.predict(X_test)
-    y_pred_class = np.round(y_pred).astype(int)
-    accuracy = accuracy_score(y_test, y_pred_class)
-    print(f"Akurasi {name}: {accuracy:.4f}")
+# Print the metrics for each model
+for model, metrics in model_metrics.items():
+    print(f"Model: {model}")
+    for metric_name, metric_value in metrics.items():
+        print(f"{metric_name}: {metric_value:.4f}")
+    print("-" * 20)
+
 ```
 
 hasilnya adalah
-`Akurasi KNN`: 0,9213
-`Akurasi RF`: 0,9478
-`Akurasi Boosting`: 0,8127 
+```
+Model: KNN
+Accuracy: 0.9213
+Precision: 0.9212
+Recall: 0.9213
+F1 Score: 0.9210
+--------------------
+Model: Random Forest
+Accuracy: 0.9478
+Precision: 0.9480
+Recall: 0.9478
+F1 Score: 0.9476
+--------------------
+Model: Boosting
+Accuracy: 0.8127
+Precision: 0.8286
+Recall: 0.8127
+F1 Score: 0.8095
+--------------------
+````
 
  Selanjutnya kita uji prediksinya menggunakan beberapa nilai dalam data dan mendapatkan hasil prediksi sebagai berikut
 | y_true | prediksi_KNN | prediksi_RF | prediksi_Boosting |
 |--------|--------------|-------------|-------------------|
-| Cloudy | Snowy        | Cloudy      | Rainy             |
+| Rainy  | Snowy        | Rainy       | Snowy             |
 
 
-Berdasarkan hasil akurasinya. permodelan menggunakan `K-Nearest Neighbors` mendapatkan nilai akurasi 92,13%, lalu permodelan dengan `Random Forest` mendapatkan akurasi 94,78% dan yang terakhir pada permodela `Boosting Algorithm` mendapatkan nilai akurasi 81,27%. Selain itu, hasil prediksi `K-Nearest Neighbors` dan `Random Forest` menjadi yang paling mendekati nilai sebenarnya.
-Maka dari itu permodelan yang akan digunakan untuk mengklasifikasikan cuaca adalah model `Random Forest`, semoga dengan model ini bisa membantu menentukan klasifikasi cuaca yang terbaik sesuai data.
+Berdasarkan hasil visualisasi dan nilai data diatas, terlihat bahwa model `K-Nearest Neighbors` memiliki nilai `Accuracy` dengan nilai 92,13%, `Precision` dengan nilai 92,12%, `Recall` dengan nilai 92,13%, dan `F1 Score` dengan nilai 92,10%. Pada model `Random Forest` memiliki `Accuracy` dengan nilai 94,78%, `Precision` dengan nilai 94,8%, `Recall` dengan nilai 94,78%, dan `F1 Score` dengan nilai 94,76%, sedangkan Pada model `Boosting Algorithm` memiliki `Accuracy` dengan nilai 91,27%, `Precision` dengan nilai 82,86%, `Recall` dengan nilai 81,27%, dan `F1 Score` dengan nilai 80,95%. Berdasarkan data tersebut, `Random Forest` menjadi model dengan nilai terbaik.
+Selain itu, hasil prediksi `K-Nearest Neighbors` dan `Random Forest` menjadi yang paling mendekati nilai sebenarnya. Maka dari itu permodelan yang akan digunakan untuk mengklasifikasikan cuaca adalah model `Random Forest`, semoga dengan model ini bisa membantu menentukan klasifikasi cuaca yang terbaik sesuai data.
 
-Antara `UV Index` dan `Weather Type` memiliki nilai korelasi 0,41 menunjukkan adanya korelasi positif sedang antara kedua variabel tersebut. Korelasi positif berarti bahwa ketika `UV Index` meningkat, kemungkinan besar `Weather Type` juga akan berubah ke arah yang lebih tinggi.
+Untuk hubungan antara fitur dengan target, `UV Index` dan `Weather Type` memiliki nilai korelasi 0,41 menunjukkan adanya korelasi positif sedang antara kedua variabel tersebut. Korelasi positif berarti bahwa ketika `UV Index` meningkat, kemungkinan besar `Weather Type` juga akan berubah ke arah yang lebih tinggi.
 Dalam konteks ini, interpretasinya bisa berarti bahwa semakin tinggi nilai UV Index (yang biasanya menunjukkan sinar matahari yang lebih kuat), tipe cuaca cenderung bergerak ke arah cuaca yang lebih cerah atau lebih berpotensi terkena sinar matahari langsung. Ini masuk akal karena indeks UV biasanya lebih tinggi pada hari-hari cerah dan berkurang pada hari mendung atau hujan.
 Namun, karena nilai korelasinya 0,41, ini hanya menunjukkan korelasi sedang, yang berarti UV Index adalah salah satu dari beberapa faktor yang mempengaruhi Weather Type.
 
