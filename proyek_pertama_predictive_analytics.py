@@ -65,6 +65,18 @@ Variabel yang terdapat pada dataset adalah sebagai berikut:
 - `Weather Type` (categorical) : Jenis cuaca yang berisi Cloudy, Rainy, Snowy dan Sunny (Target Klasifikasi)
 
 Totalnya ada 11 variabel dengan jumlah 13200 data
+"""
+
+# Cek nilai duplikat pada data
+duplicate_rows = cuaca[cuaca.duplicated()]
+print("Jumlah baris duplikat:", duplicate_rows.shape[0])
+
+"""Berdasarkan hasil pengecekan tidak ditemukan nilai duplikat"""
+
+# Cek nilai kosong pada data
+print(cuaca.isnull().sum())
+
+"""Berdasarkan pengecekan juga, tidak ditemukan data yang kosong
 
 ## Univariate Analysis
 
@@ -188,23 +200,6 @@ plt.show()
 
 Data preparation merupakan tahapan penting dalam proses pengembangan model machine learning. Ini adalah tahap di mana kita melakukan proses transformasi pada data sehingga menjadi bentuk yang cocok untuk proses pemodelan.
 
-## Cek Nilai Duplikat
-"""
-
-# Cek nilai duplikat pada data
-duplicate_rows = cuaca[cuaca.duplicated()]
-print("Jumlah baris duplikat:", duplicate_rows.shape[0])
-
-"""Berdasarkan hasil pengecekan tidak ditemukan nilai duplikat
-
-## Cek Missing Value
-"""
-
-# Cek nilai kosong pada data
-print(cuaca.isnull().sum())
-
-"""Berdasarkan pengecekan juga, tidak ditemukan data yang kosong
-
 ## Menangani Outliers
 
 Outlier adalah titik data yang secara signifikan berada di sebgaian data dalam kumpulan data. Outlier ini bisa muncul karena banyak faktor salah satunya adalah kesalahan pengamatan.
@@ -310,7 +305,7 @@ Standardisasi adalah teknik transformasi yang paling umum digunakan dalam tahap 
 
 StandardScaler melakukan proses standarisasi fitur dengan mengurangkan mean (nilai rata-rata) kemudian membaginya dengan standar deviasi untuk menggeser distribusi.  StandardScaler menghasilkan distribusi dengan standar deviasi sama dengan 1 dan mean sama dengan 0. Sekitar 68% dari nilai akan berada di antara -1 dan 1.
 
-Pada kasus ini kita hanya akan melakukan standarisai pada data latih, kemudian pada tahap evaluasi kita akan melakukan standarisasi pada data uji.
+Pada kasus ini kita hanya akan melakukan standarisai pada data latih dan data uji.
 """
 
 # Standarisasi data latih (train) dengan StandardCaler
@@ -413,16 +408,11 @@ evaluasi = pd.DataFrame(columns=['train', 'test'], index = ['KNN', 'RF', 'Boosti
 model_dict = {'KNN': knn, 'RF': RF, 'Boosting': boosting}
 
 for name, model in model_dict.items():
-    evaluasi.loc[name, 'train'] = metrics.accuracy_score(y_true=y_train, y_pred=model.predict(X_train))/1e3
-    evaluasi.loc[name, 'test'] = metrics.accuracy_score(y_true=y_test, y_pred=model.predict(X_test))/1e3
+    evaluasi.loc[name, 'train'] = metrics.accuracy_score(y_true=y_train, y_pred=model.predict(X_train))
+    evaluasi.loc[name, 'test'] = metrics.accuracy_score(y_true=y_test, y_pred=model.predict(X_test))
 
-evaluasi
-
-fig, ax = plt.subplots()
-evaluasi.sort_values(by='test', ascending=False).plot(kind='barh', ax=ax, zorder=3)
-ax.grid(zorder=0)
-
-from sklearn import metrics
+evaluasi = evaluasi.applymap(lambda x: "{:.2f}%".format(x * 100))
+print(evaluasi)
 
 y_true = y_test
 
@@ -464,19 +454,19 @@ plt.show()
 
 """Selanjutnya kita akan melihat nilai akurasi di tiap model"""
 
-# melihat nilai akurasi dari tiap model
-# Buat dictionary untuk setiap algoritma yang digunakan
-model_dict = {'KNN': knn, 'RF': RF, 'Boosting': boosting}
+# Calculate metrics for each model
+model_metrics = {model: calculate_metrics(y_true, predictions) for model, predictions in models.items()}
 
-# Hitung akurasi masing-masing algoritma pada data test
-for name, model in model_dict.items():
-    y_pred = model.predict(X_test)
-    # Konversi prediksi menjadi kelas (bulatkan ke bilangan bulat terdekat)
-    y_pred_class = np.round(y_pred).astype(int)
-    accuracy = accuracy_score(y_test, y_pred_class)
-    print(f"Akurasi {name}: {accuracy:.4f}")
+# Print the metrics for each model
+for model, metrics in model_metrics.items():
+    print(f"Model: {model}")
+    for metric_name, metric_value in metrics.items():
+        print(f"{metric_name}: {metric_value:.4f}")
+    print("-" * 20)
 
-"""Berdasarkan visualisasi data diatas, terlihat bahwa model `Random Forest` memiliki performa terbaik pada `Accuracy`, `Precision`, `Recall`, dan `F1 Score` lalau jika dilihat dari nilai akurasinya memiliki nilai 94.78%.
+"""Berdasarkan visualisasi dan nilai data diatas, terlihat bahwa model `Random Forest` memiliki performa terbaik daripada model `K-Nearest Neighbors` dan
+`Boosting Algorithm` pada `Accuracy` dengan nilai 94,78%, `Precision` dengan
+nilai 94,8%, `Recall` dengan nilai 94,78%, dan `F1 Score` dengan nilai 94,76%.
 
 Selanjutnya kita uji prediksinya menggunakan beberapa nilai dalam data
 """
