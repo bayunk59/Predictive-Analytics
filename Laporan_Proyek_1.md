@@ -385,16 +385,6 @@ scaler = StandardScaler()
 X_train[:] = scaler.fit_transform(X_train[:])
 X_train.head()
 ```
-
-output:
-| | Humidity | Wind Speed | Precipitation (%) | Cloud Cover | Atmospheric Pressure | UV Index | Season |
-|------|------------|------------|-------------------|-------------|----------------------|----------|----------|
-| 0 | -0.795473 | -1.373182 | -1.463063 | -1.919352 | 1.492121 | 0.658528 | -0.753285|
-| 1 | 1.007657 | 0.315739 | 0.531440 | 0.014708 | 0.757302 | -0.728680| 0.966641 |
-| 2 | -0.589401 | -0.306495 | -1.120258 | 0.014708 | 1.014102 | -0.451238| -1.613249|
-| 3 | 1.059175 | -0.662057 | 1.092394 | -1.919352 | 1.706378 | 2.045736 | 0.966641 |
-| 4 | -1.671279 | -1.106510 | -1.182586 | -1.919352 | 0.300168 | 0.381087 | 0.966641 |
-
 Mengecek nilai mean dan standar deviasi setelah proses standarisasi
 
 ```
@@ -420,17 +410,6 @@ scaler = StandardScaler()
 X_test[:] = scaler.fit_transform(X_test[:])
 X_test.head()
 ```
-
-output:
-|      | Humidity | Wind Speed | Precipitation (%) | Cloud Cover | Atmospheric Pressure | UV Index | Season   |
-|------|----------|------------|-------------------|-------------|----------------------|----------|----------|
-| 7259 | 0.972994 | 0.424815   | 1.368710          | -0.005879   | -0.599656            | -0.700018| 0.955664 |
-| 6013 | 0.047125 | -0.842505  | -0.898904         | -0.987591   | 0.602839             | 0.421354 | 0.955664 |
-| 11517| 0.201436 | 1.601611   | 1.463194          | -1.969304   | 1.692384             | -0.980361| 0.093649 |
-| 1452 | 1.384491 | -0.389891  | -0.017054         | -0.005879   | -1.605448            | -0.980361| 0.955664 |
-| 6753 | -0.158624| 1.511088   | 0.770312          | 0.975834    | -0.050273            | -0.139332| -1.630381|
-
-
 Mengecek nilai mean dan standar deviasi setelah proses standarisasi
 
 ```
@@ -575,6 +554,29 @@ Akurasi bagus jika data seimbang, tetapi jika data tidak seimbang (misalnya lebi
 
 - `F1-Score` berguna jika kita memiliki dataset yang tidak seimbang, di mana kita ingin menjaga keseimbangan antara Precision dan Recall.
 - F1 lebih rendah jika salah satu dari Precision atau Recall rendah, karena ini merupakan rata-rata harmonik yang lebih memperhatikan nilai yang rendah dibandingkan rata-rata biasa.
+
+Selanjutnya adalah evaluasi ketiga model
+```
+evaluasi = pd.DataFrame(columns=['train', 'test'], index = ['KNN', 'RF', 'Boosting'])
+
+model_dict = {'KNN': knn, 'RF': RF, 'Boosting': boosting}
+
+for name, model in model_dict.items():
+    evaluasi.loc[name, 'train'] = metrics.accuracy_score(y_true=y_train, y_pred=model.predict(X_train))/1e3
+    evaluasi.loc[name, 'test'] = metrics.accuracy_score(y_true=y_test, y_pred=model.predict(X_test))/1e3
+```
+
+output:
+
+|           | Train   | Test    |
+|-----------|---------|---------|
+| KNN       | 0.000941| 0.000921|
+| RF        | 0.000990| 0.000948|
+| Boosting  | 0.000801| 0.000813|
+
+lalu saat kita plot grafik menjadi 
+
+![grafik model](https://github.com/user-attachments/assets/a2d016cb-54dd-4b30-a288-11fae6f617c0)
 
 
 Berdasarkan hasil akurasinya. permodelan menggunakan `K-Nearest Neighbors` mendapatkan nilai akurasi 91,45%, lalu permodelan dengan `Random Forest` mendapatkan akurasi 94,61% dan yang terakhir pada permodela `Boosting Algorithm` mendapatkan nilai akurasi 92,47%. Selain itu, hasil prediksi `K-Nearest Neighbors` dan `Random Forest` menjadi yang paling mendekati nilai sebenarnya.
