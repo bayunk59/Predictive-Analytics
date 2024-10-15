@@ -186,6 +186,7 @@ output:
   ![uni4](https://github.com/user-attachments/assets/54c538c7-c9e4-4724-9716-01aa95a835d5)
 
   Berdasarkan grafik pada fitur `Weather Type` di atas, nilai pada kolom ini terlihat seimbang dengan rincian sebagai berikut:
+
 - `Rainy` memiliki 3300 data
 - `Cluody` memiliki 3300 data
 - `Sunny` memiliki 3300 data
@@ -230,20 +231,22 @@ output:
   ![multi 3](https://github.com/user-attachments/assets/f6a32fd5-234f-4ae4-93f7-0550e2c9b371)
 
 Berdasarkan grafik di atas didapatn:
--  Pada Fitur `Cloud Cover`
-  1. Pada `party cloudy` jumlah `Coudy` menjadi yang terbanyak hampir mendekati 2000 data
-  2. pada `Clear` semua nilainya diisi dengan tipe `Sunny`
-  3. pada `overccast` nilia terendahnya adda pada `Sunny` dan yang terbanyak adalah `Rainy` dan `Snowy`
-  4. pada `cludy`, hampr semua datanya rata
+
+- Pada Fitur `Cloud Cover`
+
+1. Pada `party cloudy` jumlah `Coudy` menjadi yang terbanyak hampir mendekati 2000 data
+2. pada `Clear` semua nilainya diisi dengan tipe `Sunny`
+3. pada `overccast` nilia terendahnya adda pada `Sunny` dan yang terbanyak adalah `Rainy` dan `Snowy`
+4. pada `cludy`, hampr semua datanya rata
 
 - Pada fitur `Season`
+
   1. pada `winter` jumlah `Snowy` menjadi yang paling besar melebihi 3000 data, sedangkan yang lain ada di bawah 1000 data
   2. pada `Spring`, `Summer` dan `Autumn` datanya hampir rata antara 500 - 1000 data kecuali pada data `Snowy` yang jumlahnya sangat sedikit
 
 - Pada fitur `Location`
   1. pada `inland` dan `mountain` jumlah datanya hampir sama dengan data tertinggi ada pada `Snowy`
   2. Sedangkan pada `coastal`, data `Snowy` menjdai yang terendah dengan jumlah kurang dari 200 data
-
 
 #### Numerical Features
 
@@ -319,6 +322,7 @@ Outlier adalah titik data yang secara signifikan berada di sebgaian data dalam k
 Pada bagian ini, semua data kategorik akan diubah menjadi data numerik untuk mempermudah permodelan dan menentukan nilai uji korelasi antar fitur.
 
 - Mengubah data
+
   ```
   le = LabelEncoder()
   cuaca['Cloud Cover'] = le.fit_transform(cuaca['Cloud Cover'])
@@ -328,34 +332,34 @@ Pada bagian ini, semua data kategorik akan diubah menjadi data numerik untuk mem
   cuaca.head()
   ```
 
-  |      | Temperature | Humidity | Wind Speed | Precipitation (%) | Cloud Cover | Atmospheric Pressure | UV Index | Season | Visibility (km) | Location | Weather Type |
-|------|-------------|----------|------------|-------------------|-------------|----------------------|----------|--------|-----------------|----------|--------------|
-| 0    | 14.0        | 73       | 9.5        | 82.0              | 3           | 1010.82              | 2        | 3      | 3.5             | 1        | 1            |
-| 1    | 39.0        | 96       | 8.5        | 71.0              | 3           | 1011.43              | 7        | 1      | 10.0            | 1        | 0            |
-| 2    | 30.0        | 64       | 7.0        | 16.0              | 0           | 1018.72              | 5        | 1      | 5.5             | 2        | 3            |
-| 3    | 38.0        | 83       | 1.5        | 82.0              | 0           | 1026.25              | 7        | 1      | 1.0             | 0        | 3            |
-| 4    | 27.0        | 74       | 17.0       | 66.0              | 2           | 990.67               | 1        | 3      | 2.5             | 2        | 1            |
+  |     | Temperature | Humidity | Wind Speed | Precipitation (%) | Cloud Cover | Atmospheric Pressure | UV Index | Season | Visibility (km) | Location | Weather Type |
+  | --- | ----------- | -------- | ---------- | ----------------- | ----------- | -------------------- | -------- | ------ | --------------- | -------- | ------------ |
+  | 0   | 14.0        | 73       | 9.5        | 82.0              | 3           | 1010.82              | 2        | 3      | 3.5             | 1        | 1            |
+  | 1   | 39.0        | 96       | 8.5        | 71.0              | 3           | 1011.43              | 7        | 1      | 10.0            | 1        | 0            |
+  | 2   | 30.0        | 64       | 7.0        | 16.0              | 0           | 1018.72              | 5        | 1      | 5.5             | 2        | 3            |
+  | 3   | 38.0        | 83       | 1.5        | 82.0              | 0           | 1026.25              | 7        | 1      | 1.0             | 0        | 3            |
+  | 4   | 27.0        | 74       | 17.0       | 66.0              | 2           | 990.67               | 1        | 3      | 2.5             | 2        | 1            |
 
- data kategorik sudah berhasil diubah menjadi data numerik
+data kategorik sudah berhasil diubah menjadi data numerik
 
- - Melakukan uji korelasi
-   ```
-    # Mengetahui skor korelasi
-    plt.figure(figsize=(10, 8))
-    correlation_matrix = cuaca.corr().round(2)
+- Melakukan uji korelasi
 
-    # Untuk menge-print nilai di dalam kotak, gunakan parameter anot=True
-    sns.heatmap(data=correlation_matrix, annot=True, cmap='coolwarm', linewidths=0.5, )
-    plt.title("Correlation Matrix untuk Fitur Numerik ", size=20)
-    plt.tight_layout()
-   ```
+  ```
+   # Mengetahui skor korelasi
+   plt.figure(figsize=(10, 8))
+   correlation_matrix = cuaca.corr().round(2)
 
-   output:
+   # Untuk menge-print nilai di dalam kotak, gunakan parameter anot=True
+   sns.heatmap(data=correlation_matrix, annot=True, cmap='coolwarm', linewidths=0.5, )
+   plt.title("Correlation Matrix untuk Fitur Numerik ", size=20)
+   plt.tight_layout()
+  ```
 
-   ![korelasi](https://github.com/user-attachments/assets/901da1a1-4c83-409a-a41e-2478dd19e511)
+  output:
 
-  Berdasarkan nilai korelasi di atas `Temperature`, `Visibilty (km)`, dan `Location` adalah fitur yang mempunyai nilai korelasi paling kecil dengan target `Weather Type` dan akan di hapus
+  ![korelasi](https://github.com/user-attachments/assets/901da1a1-4c83-409a-a41e-2478dd19e511)
 
+Berdasarkan nilai korelasi di atas `Temperature`, `Visibilty (km)`, dan `Location` adalah fitur yang mempunyai nilai korelasi paling kecil dengan target `Weather Type` dan akan di hapus
 
 ### Hapus Kolom dengan Korelasi Terendah
 
@@ -368,14 +372,13 @@ cuaca.head()
 
 output:
 
-|      | Humidity | Wind Speed | Precipitation (%) | Cloud Cover | Atmospheric Pressure | UV Index | Season | Weather Type |
-|------|----------|------------|-------------------|-------------|----------------------|----------|--------|--------------|
-| 0    | 73       | 9.5        | 82.0              | 3           | 1010.82              | 2        | 3      | 1            |
-| 1    | 96       | 8.5        | 71.0              | 3           | 1011.43              | 7        | 1      | 0            |
-| 2    | 64       | 7.0        | 16.0              | 0           | 1018.72              | 5        | 1      | 3            |
-| 3    | 83       | 1.5        | 82.0              | 0           | 1026.25              | 7        | 1      | 3            |
-| 4    | 74       | 17.0       | 66.0              | 2           | 990.67               | 1        | 3      | 1            |
-
+|     | Humidity | Wind Speed | Precipitation (%) | Cloud Cover | Atmospheric Pressure | UV Index | Season | Weather Type |
+| --- | -------- | ---------- | ----------------- | ----------- | -------------------- | -------- | ------ | ------------ |
+| 0   | 73       | 9.5        | 82.0              | 3           | 1010.82              | 2        | 3      | 1            |
+| 1   | 96       | 8.5        | 71.0              | 3           | 1011.43              | 7        | 1      | 0            |
+| 2   | 64       | 7.0        | 16.0              | 0           | 1018.72              | 5        | 1      | 3            |
+| 3   | 83       | 1.5        | 82.0              | 0           | 1026.25              | 7        | 1      | 3            |
+| 4   | 74       | 17.0       | 66.0              | 2           | 990.67               | 1        | 3      | 1            |
 
 Penghapusan fitur `Temperature` ,`Visibilty (km)`, `Location` karena memiliki nilai korelasi yang rendah. Berdasarkan data terbaru, tersisa 8 kolom
 
@@ -411,14 +414,13 @@ X_train[numerical_features].head()
 ```
 
 output:
-|      | Humidity   | Wind Speed | Precipitation (%) | Cloud Cover | Atmospheric Pressure | UV Index | Season   |
+| | Humidity | Wind Speed | Precipitation (%) | Cloud Cover | Atmospheric Pressure | UV Index | Season |
 |------|------------|------------|-------------------|-------------|----------------------|----------|----------|
-| 0    | -0.795473  | -1.373182  | -1.463063         | -1.919352   | 1.492121             | 0.658528 | -0.753285|
-| 1    | 1.007657   | 0.315739   | 0.531440          | 0.014708    | 0.757302             | -0.728680| 0.966641 |
-| 2    | -0.589401  | -0.306495  | -1.120258         | 0.014708    | 1.014102             | -0.451238| -1.613249|
-| 3    | 1.059175   | -0.662057  | 1.092394          | -1.919352   | 1.706378             | 2.045736 | 0.966641 |
-| 4    | -1.671279  | -1.106510  | -1.182586         | -1.919352   | 0.300168             | 0.381087 | 0.966641 |
-
+| 0 | -0.795473 | -1.373182 | -1.463063 | -1.919352 | 1.492121 | 0.658528 | -0.753285|
+| 1 | 1.007657 | 0.315739 | 0.531440 | 0.014708 | 0.757302 | -0.728680| 0.966641 |
+| 2 | -0.589401 | -0.306495 | -1.120258 | 0.014708 | 1.014102 | -0.451238| -1.613249|
+| 3 | 1.059175 | -0.662057 | 1.092394 | -1.919352 | 1.706378 | 2.045736 | 0.966641 |
+| 4 | -1.671279 | -1.106510 | -1.182586 | -1.919352 | 0.300168 | 0.381087 | 0.966641 |
 
 Mengecek nilai mean dan standar deviasi setelah proses standarisasi
 
@@ -428,17 +430,16 @@ X_train[numerical_features].describe().round(4)
 
 output:
 
-|           | Humidity   | Wind Speed | Precipitation (%) | Cloud Cover | Atmospheric Pressure | UV Index | Season   |
-|-----------|------------|------------|-------------------|-------------|----------------------|----------|----------|
-| count     | 10520.0000 | 10520.0000 | 10520.0000        | 10520.0000  | 10520.0000           | 10520.0000| 10520.0000|
-| mean      | 0.0000     | -0.0000    | -0.0000           | -0.0000     | -0.0000              | 0.0000   | 0.0000   |
-| std       | 1.0000     | 1.0000     | 1.0000            | 1.0000      | 1.0000               | 1.0000   | 1.0000   |
-| min       | -2.5471    | -1.6399    | -1.6189           | -1.9194     | -3.3554              | -1.0061  | -1.6132  |
-| 25%       | -0.5379    | -0.7509    | -1.0579           | 0.0147      | -0.8084              | -0.7287  | -0.7533  |
-| 50%       | 0.0288     | -0.1287    | 0.1263            | 0.0147      | 0.1312               | -0.4512  | 0.1067   |
-| 75%       | 0.7501     | 0.7602     | 0.9054            | 0.9817      | 0.7751               | 0.6585   | 0.9666   |
-| max       | 2.0380     | 2.9825     | 1.7780            | 0.9817      | 3.3214               | 2.8781   | 0.9666   |
-
+|       | Humidity   | Wind Speed | Precipitation (%) | Cloud Cover | Atmospheric Pressure | UV Index   | Season     |
+| ----- | ---------- | ---------- | ----------------- | ----------- | -------------------- | ---------- | ---------- |
+| count | 10520.0000 | 10520.0000 | 10520.0000        | 10520.0000  | 10520.0000           | 10520.0000 | 10520.0000 |
+| mean  | 0.0000     | -0.0000    | -0.0000           | -0.0000     | -0.0000              | 0.0000     | 0.0000     |
+| std   | 1.0000     | 1.0000     | 1.0000            | 1.0000      | 1.0000               | 1.0000     | 1.0000     |
+| min   | -2.5471    | -1.6399    | -1.6189           | -1.9194     | -3.3554              | -1.0061    | -1.6132    |
+| 25%   | -0.5379    | -0.7509    | -1.0579           | 0.0147      | -0.8084              | -0.7287    | -0.7533    |
+| 50%   | 0.0288     | -0.1287    | 0.1263            | 0.0147      | 0.1312               | -0.4512    | 0.1067     |
+| 75%   | 0.7501     | 0.7602     | 0.9054            | 0.9817      | 0.7751               | 0.6585     | 0.9666     |
+| max   | 2.0380     | 2.9825     | 1.7780            | 0.9817      | 3.3214               | 2.8781     | 0.9666     |
 
 Seperti yang disebutkan sebelumnya, proses ini akan mengubah nilai rata-rata (mean) menjadi 0 dan standar deviasi menjadi 1.
 
@@ -579,12 +580,11 @@ mse
 ```
 
 output:
-|           | Train      | Test       |
+| | Train | Test |
 |-----------|------------|------------|
-| KNN       | 0.000098   | 0.000131   |
-| RF        | 0.000018   | 0.000080   |
-| Boosting  | 0.000165   | 0.000177   |
-
+| KNN | 0.000098 | 0.000131 |
+| RF | 0.000018 | 0.000080 |
+| Boosting | 0.000165 | 0.000177 |
 
 Untuk memudahkan, mari kita plot metrik tersebut dengan bar chart. Implementasikan kode di bawah ini:
 
@@ -634,10 +634,9 @@ pd.DataFrame(pred_dict)
 ```
 
 output:
-|      | y_true | prediksi_KNN | prediksi_RF | prediksi_Boosting |
+| | y_true | prediksi_KNN | prediksi_RF | prediksi_Boosting |
 |------|--------|--------------|-------------|-------------------|
-| 7259 | 2      | 1.7          | 2.0         | 1.7               |
-
+| 7259 | 2 | 1.7 | 2.0 | 1.7 |
 
 Berdasarkan hasil akurasinya. permodelan menggunakan `K-Nearest Neighbors` mendapatkan nilai akurasi 91,45%, lalu permodelan dengan `Random Forest` mendapatkan akurasi 94,61% dan yang terakhir pada permodela `Boosting Algorithm` mendapatkan nilai akurasi 92,47%. Selain itu, hasil prediksi `K-Nearest Neighbors` dan `Random Forest` menjadi yang paling mendekati nilai sebenarnya.
 Maka dari itu permodelan yang akan digunakan untuk mengklasifikasikan cuaca adalah model `Random Forest`, semoga dengan model ini bisa membantu menentukan klasifikasi cuaca yang terbaik sesuai data.
@@ -648,4 +647,3 @@ Namun, karena nilai korelasinya 0,41, ini hanya menunjukkan korelasi sedang, yan
 
 Berbeda dengan UV Index, Cloud Cover memiliki nilai korelasi -0,57 antara Cloud cover (penutupan awan) dan Weather Type (tipe cuaca) menunjukkan bahwa terdapat korelasi negatif sedang antara kedua variabel tersebut. Korelasi negatif berarti bahwa ketika Cloud cover meningkat, kemungkinan besar Weather Type bergerak ke arah yang lebih rendah (atau berlawanan).
 Dalam hal ini, interpretasi sederhana bisa berarti bahwa semakin tinggi penutupan awan (cuaca mendung), kemungkinan besar tipe cuaca yang berkaitan dengan cerah atau matahari akan lebih kecil, sementara tipe cuaca yang lebih mendung, hujan, atau badai lebih mungkin terjadi.
-
