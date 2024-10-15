@@ -33,7 +33,7 @@ Goals/tujuan dari poyek ini adalah:
 Beberapa solusi yang akan coba terapkan adalah:
 
 1. Melakukan eksplorasi fitur menggunakan analisis univariat dan multivariat untuk menemukan hubungan antar fitur baik yang data numerik maupun data kategorikal.
-2. Untuk mendapatkan data yang bersih sebelum di buat permodelan. Dilakukan preparation data yang terdiri dari Menghapus outlier, Menghapus fitur dengan korelasi yang rendah, Encoding Fitur Kategori, Train-Test-Spit dan Standarisasi.
+2. Untuk mendapatkan data yang bersih sebelum di buat permodelan. Dilakukan preparation data yang terdiri dari Cek duplikat nilai, cek missing value, Menghapus outlier, Menghapus fitur dengan korelasi yang rendah, Encoding Fitur Kategori, Train-Test-Spit dan Standarisasi.
 3. Permodelan akan dilakukan dengan 3 algoritma model, yaitu `K-Nearest Neighbors (KNN)`, `Random Forest (RF)` dan `Boosting Algorithm` lalu akan dipilih model terbaik berdasarkan nilai akurasinya.
 
 ## Data Understanding
@@ -61,64 +61,6 @@ Tahapan yang akan saya lakukan adalah:
 Exploratory data analysis atau sering disingkat EDA merupakan proses investigasi awal pada data untuk menganalisis karakteristik, menemukan pola, anomali, dan memeriksa asumsi pada data. Teknik ini biasanya menggunakan bantuan statistik dan representasi grafis atau visualisasi.
 
 Berikut adalah tahapan EDA yang dilakukan
-
-1. cek nilai duplikat pada data
-
-```
-duplicate_rows = cuaca[cuaca.duplicated()]
-print("Jumlah baris duplikat:", duplicate_rows.shape[0])
-```
-
-Output: Tidak terdapat baris duplikat
-
-2. cek nilai yang kosong pada data
-
-```
-print(cuaca.isnull().sum())
-```
-
-output:
-
-```
-Temperature             0
-Humidity                0
-Wind Speed              0
-Precipitation (%)       0
-Cloud Cover             0
-Atmospheric Pressure    0
-UV Index                0
-Season                  0
-Visibility (km)         0
-Location                0
-Weather Type            0
-dtype: int64
-```
-
-3. Mengubah type data target, dalam ini `Weather Type` dari kategori menjadi numerik agar mudah dalam permodelan
-
-```
-from sklearn.preprocessing import LabelEncoder
-
-le = LabelEncoder()
-cuaca['Weather Type'] = le.fit_transform(cuaca['Weather Type'])
-cuaca.head()
-```
-
-output:
-
-| Temperature | Humidity | Wind Speed | Precipitation (%) | Cloud Cover   | Atmospheric Pressure | UV Index | Season | Visibility (km) | Location | Weather Type |
-| ----------- | -------- | ---------- | ----------------- | ------------- | -------------------- | -------- | ------ | --------------- | -------- | ------------ |
-| 14.0        | 73       | 9.5        | 82.0              | partly cloudy | 1010.82              | 2        | Winter | 3.5             | inland   | 1            |
-| 39.0        | 96       | 8.5        | 71.0              | partly cloudy | 1011.43              | 7        | Spring | 10.0            | inland   | 0            |
-| 30.0        | 64       | 7.0        | 16.0              | clear         | 1018.72              | 5        | Spring | 5.5             | mountain | 3            |
-| 38.0        | 83       | 1.5        | 82.0              | clear         | 1026.25              | 7        | Spring | 1.0             | coastal  | 3            |
-| 27.0        | 74       | 17.0       | 66.0              | overcast      | 990.67               | 1        | Winter | 2.5             | mountain | 1            |
-
-Ubah tipe data berhasil, tipe data `Weather Type` berubah menjadi numerik dengan rincian:
-0 = Cloudy
-1 = Rainy
-2 = Snowy
-3 = Sunny
 
 ### Univariate Analysis
 
@@ -267,6 +209,38 @@ Berdasarkan visualisasi data diatas, tidak terlihat adanya hubungan yang signifi
 
 Data preparation merupakan tahapan penting dalam proses pengembangan model machine learning. Ini adalah tahapan dilakukannya proses transformasi pada data sehingga menjadi bentuk yang cocok untuk proses pemodelan. Dalam data preparation akan dilakukan 3 tahapan, yakni Encoding Fiitur Kategori, Train-Test-Split dan Standarisasi.
 
+### cek nilai duplikat pada data
+
+```
+duplicate_rows = cuaca[cuaca.duplicated()]
+print("Jumlah baris duplikat:", duplicate_rows.shape[0])
+```
+
+Output: Tidak terdapat baris duplikat
+
+### cek missing value pada data
+
+```
+print(cuaca.isnull().sum())
+```
+
+output:
+
+```
+Temperature             0
+Humidity                0
+Wind Speed              0
+Precipitation (%)       0
+Cloud Cover             0
+Atmospheric Pressure    0
+UV Index                0
+Season                  0
+Visibility (km)         0
+Location                0
+Weather Type            0
+dtype: int64
+```
+
 ### Menangani Outlier
 
 Outlier adalah titik data yang secara signifikan berada di sebgaian data dalam kumpulan data. Outlier ini bisa muncul karena banyak faktor salah satunya adalah kesalahan pengamatan.
@@ -403,14 +377,12 @@ Standardisasi adalah teknik transformasi yang paling umum digunakan dalam tahap 
 
 StandardScaler melakukan proses standarisasi fitur dengan mengurangkan mean (nilai rata-rata) kemudian membaginya dengan standar deviasi untuk menggeser distribusi. StandardScaler menghasilkan distribusi dengan standar deviasi sama dengan 1 dan mean sama dengan 0. Sekitar 68% dari nilai akan berada di antara -1 dan 1.
 
-Pada kasus ini kita hanya akan melakukan standarisai pada data latih, kemudian pada tahap evaluasi kita akan melakukan standarisasi pada data uji.
+Pada kasus ini kita hanya akan melakukan standarisai pada data latih dan data uji.
 
 ```
-numerical_features = ['Humidity', 'Wind Speed', 'Precipitation (%)', 'Cloud Cover', 'Atmospheric Pressure', 'UV Index', 'Season']
 scaler = StandardScaler()
-scaler.fit(X_train[numerical_features])
-X_train[numerical_features] = scaler.transform(X_train.loc[:, numerical_features])
-X_train[numerical_features].head()
+X_train[:] = scaler.fit_transform(X_train[:])
+X_train.head()
 ```
 
 output:
