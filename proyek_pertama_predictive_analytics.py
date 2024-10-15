@@ -17,14 +17,14 @@ import matplotlib.pyplot as plt
 import pandas as pd
 # %matplotlib inline
 import seaborn as sns
+from sklearn import metrics
 from sklearn.preprocessing import LabelEncoder
-from sklearn.preprocessing import  OneHotEncoder
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-from sklearn.neighbors import KNeighborsRegressor
-from sklearn.metrics import mean_squared_error
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.ensemble import AdaBoostRegressor
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.metrics import confusion_matrix
 from sklearn.metrics import accuracy_score
 
 # Load data
@@ -65,18 +65,6 @@ Variabel yang terdapat pada dataset adalah sebagai berikut:
 - `Weather Type` (categorical) : Jenis cuaca yang berisi Cloudy, Rainy, Snowy dan Sunny (Target Klasifikasi)
 
 Totalnya ada 11 variabel dengan jumlah 13200 data
-"""
-
-# Cek nilai duplikat pada data
-duplicate_rows = cuaca[cuaca.duplicated()]
-print("Jumlah baris duplikat:", duplicate_rows.shape[0])
-
-"""Berdasarkan hasil pengecekan tidak ditemukan nilai duplikat"""
-
-# Cek nilai kosong pada data
-print(cuaca.isnull().sum())
-
-"""Berdasarkan pengecekan juga, tidak ditemukan data yang kosong
 
 ## Univariate Analysis
 
@@ -200,6 +188,23 @@ plt.show()
 
 Data preparation merupakan tahapan penting dalam proses pengembangan model machine learning. Ini adalah tahap di mana kita melakukan proses transformasi pada data sehingga menjadi bentuk yang cocok untuk proses pemodelan.
 
+## Cek Nilai Duplikat
+"""
+
+# Cek nilai duplikat pada data
+duplicate_rows = cuaca[cuaca.duplicated()]
+print("Jumlah baris duplikat:", duplicate_rows.shape[0])
+
+"""Berdasarkan hasil pengecekan tidak ditemukan nilai duplikat
+
+## Cek Missing Value
+"""
+
+# Cek nilai kosong pada data
+print(cuaca.isnull().sum())
+
+"""Berdasarkan pengecekan juga, tidak ditemukan data yang kosong
+
 ## Menangani Outliers
 
 Outlier adalah titik data yang secara signifikan berada di sebgaian data dalam kumpulan data. Outlier ini bisa muncul karena banyak faktor salah satunya adalah kesalahan pengamatan.
@@ -309,18 +314,23 @@ Pada kasus ini kita hanya akan melakukan standarisai pada data latih, kemudian p
 """
 
 # Standarisasi data latih (train) dengan StandardCaler
-numerical_features = ['Humidity', 'Wind Speed', 'Precipitation (%)', 'Cloud Cover', 'Atmospheric Pressure', 'UV Index', 'Season']
 scaler = StandardScaler()
-scaler.fit(X_train[numerical_features])
-X_train[numerical_features] = scaler.transform(X_train.loc[:, numerical_features])
-X_train[numerical_features].head()
+X_train[:] = scaler.fit_transform(X_train[:])
+X_train.head()
 
 # mengecek nilai mean dan standar deviasi pada setelah proses standarisasi
-X_train[numerical_features].describe().round(4)
+X_train.describe().round(4)
 
-"""Seperti yang disebutkan sebelumnya, proses ini akan mengubah nilai rata-rata (mean) menjadi 0 dan standar deviasi menjadi 1.
+"""Seperti yang disebutkan sebelumnya, proses ini akan mengubah nilai rata-rata (mean) menjadi 0 dan standar deviasi menjadi 1."""
 
-# Model Deployment
+# Standarisasi data latih (test) dengan StandardCaler
+X_test[:] = scaler.fit_transform(X_test[:])
+X_test.head()
+
+# mengecek nilai mean dan standar deviasi pada setelah proses standarisasi
+X_test.describe().round(4)
+
+"""# Model Deployment
 
 Pada tahap permodelan ini saya akan menggunakan 3 model yang berbeda, berikut ini adalah ketiga algoritma tersebut:
 1. K-Nearest Neighbor (KNN)
@@ -352,33 +362,23 @@ Pada tahap permodelan ini saya akan menggunakan 3 model yang berbeda, berikut in
     - Waktu pelatihan yang lama
     - Memerlukan tuning parameter
 
-Sebelum kita mulai proses modellingnya, mari siapkan data frame untuk analisis ketiga model tersebut lebih dahulu
-"""
-
-# Siapkan dataframe untuk analisis model
-models = pd.DataFrame(index=['train_mse', 'test_mse'],
-                      columns=['KNN', 'RandomForest', 'Boosting'])
-
-"""Pada tahap ini kita hanya melatih data training dan menyimpan data testing dari semua model untuk tahap evaluasi yang akan dibahas di Modul Evaluasi Model
+Pada tahap ini kita hanya melatih data training dan menyimpan data testing dari semua model untuk tahap evaluasi yang akan dibahas di Modul Evaluasi Model
 
 ## Model K-Nearest Neighbor (K-NN)
 """
 
-knn = KNeighborsRegressor(n_neighbors=10)
+knn = KNeighborsClassifier(n_neighbors=10)
 knn.fit(X_train, y_train)
-
-models.loc['train_mse','knn'] = mean_squared_error(y_pred = knn.predict(X_train), y_true=y_train)
+knn_predictions = knn.predict(X_test)
 
 """pada tahapan ini kita akan melatih data dengan KNN, kita menggunakan `n_neighbors`= 10 tetangga dan metric Euclidean untuk mengukur jarak antara titik.
 
 ## Model Random Forest
 """
 
-# buat model prediksi
-RF = RandomForestRegressor(n_estimators=50, max_depth=16, random_state=55, n_jobs=-1)
+RF = RandomForestClassifier(n_estimators=50, max_depth=16, random_state=55, n_jobs=-1)
 RF.fit(X_train, y_train)
-
-models.loc['train_mse','RandomForest'] = mean_squared_error(y_pred=RF.predict(X_train), y_true=y_train)
+RF_predictions = RF.predict(X_test)
 
 """Berikut adalah parameter-parameter yang digunakan:
 
@@ -390,9 +390,9 @@ models.loc['train_mse','RandomForest'] = mean_squared_error(y_pred=RF.predict(X_
 ## Model Boosting Algorithm
 """
 
-boosting = AdaBoostRegressor(learning_rate=0.05, random_state=55)
+boosting = AdaBoostClassifier(learning_rate=0.05, random_state=55)
 boosting.fit(X_train, y_train)
-models.loc['train_mse','Boosting'] = mean_squared_error(y_pred=boosting.predict(X_train), y_true=y_train)
+boosting_predictions = boosting.predict(X_test)
 
 """kita akan menggunakan metode adaptive boosting. Salah satu metode adaptive boosting yang terkenal adalah AdaBoost.
 
@@ -403,38 +403,64 @@ Berikut merupakan parameter-parameter yang digunakan pada potongan kode di atas.
 
 # Evaluasi Model
 
-Pada proses evaluasi kita akan menggunakan metrik MSE atau Mean Squared Error yang akan menghitung jumlah selisih kuadrat rata-rata nilai yang sebenarnya dengan nilai prediksi.
+Pada proses evaluasi kita akan menggunakan metrik Accuracy, Precision, Recall dan F1-Score untuk menentukan peforma mana yang terbaik
 
-Namun, sebelum menghitung nilai MSE dalam model, kita perlu melakukan proses scaling fitur numerik pada data uji
+Selanjutnya adalah melakukan evaluasi pada ketiga model.
 """
 
-# Proses Scalling
-# Lakukan scaling terhadap fitur numerik pada X_test sehingga memiliki rata-rata=0 dan varians=1
-X_test.loc[:, numerical_features] = scaler.transform(X_test[numerical_features])
+evaluasi = pd.DataFrame(columns=['train', 'test'], index = ['KNN', 'RF', 'Boosting'])
 
-"""Proses scaling diatas dilakukan terhadap data uji. Hal ini harus dilakukan agar skala antara data latih dan data uji sama dan kita bisa melakukan evaluasi.
-
-Selanjutnya adalah melakukan evaluasi pada ketiga model dengan metrik MSE.
-"""
-
-# Buat variabel mse yang isinya adalah dataframe nilai mse data train dan test pada masing-masing algoritma
-mse = pd.DataFrame(columns=['train', 'test'], index=['KNN','RF','Boosting'])
-
-# Buat dictionary untuk setiap algoritma yang digunakan
 model_dict = {'KNN': knn, 'RF': RF, 'Boosting': boosting}
 
-# Hitung Mean Squared Error masing-masing algoritma pada data train dan test
 for name, model in model_dict.items():
-    mse.loc[name, 'train'] = mean_squared_error(y_true=y_train, y_pred=model.predict(X_train))/1e3
-    mse.loc[name, 'test'] = mean_squared_error(y_true=y_test, y_pred=model.predict(X_test))/1e3
+    evaluasi.loc[name, 'train'] = metrics.accuracy_score(y_true=y_train, y_pred=model.predict(X_train))/1e3
+    evaluasi.loc[name, 'test'] = metrics.accuracy_score(y_true=y_test, y_pred=model.predict(X_test))/1e3
 
-# Panggil mse
-mse
+evaluasi
 
 fig, ax = plt.subplots()
-mse.sort_values(by='test', ascending=False).plot(kind='barh', ax=ax, zorder=3)
+evaluasi.sort_values(by='test', ascending=False).plot(kind='barh', ax=ax, zorder=3)
 ax.grid(zorder=0)
-plt.xticks(rotation=45)
+
+from sklearn import metrics
+
+y_true = y_test
+
+models = {
+    'KNN': knn_predictions,
+    'Random Forest': RF_predictions,
+    'Boosting': boosting_predictions
+}
+# Define a function to calculate metrics
+def calculate_metrics(y_true, y_pred):
+    accuracy = metrics.accuracy_score(y_true, y_pred)
+    precision = metrics.precision_score(y_true, y_pred, average='weighted')
+    recall = metrics.recall_score(y_true, y_pred, average='weighted')
+    f1 = metrics.f1_score(y_true, y_pred, average='weighted')
+    return {'Accuracy': accuracy, 'Precision': precision, 'Recall': recall, 'F1 Score': f1}
+
+# Calculate metrics for each model
+model_metrics = {model: calculate_metrics(y_true, predictions) for model, predictions in models.items()}
+
+colors = ['blue', 'green', 'red']
+
+# Create a figure with subplots
+fig, axes = plt.subplots(nrows=4, ncols=1, figsize=(7, 15))
+fig.suptitle('Classification Metrics for KNN, SVM, and Random Forest', fontsize=16)
+
+# Metrics to plot
+metrics_list = ['Accuracy', 'Precision', 'Recall', 'F1 Score']
+
+# Plotting each metric in its own subplot
+for i, metric in enumerate(metrics_list):
+    values = [model_metrics[model][metric] for model in models]
+    sns.barplot(x=values, y=list(models.keys()), ax=axes[i], palette=colors)
+    axes[i].set_title(metric)
+    axes[i].set_xlabel('Score')
+
+# Adjust layout for better spacing
+plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+plt.show()
 
 """Selanjutnya kita akan melihat nilai akurasi di tiap model"""
 
@@ -450,17 +476,34 @@ for name, model in model_dict.items():
     accuracy = accuracy_score(y_test, y_pred_class)
     print(f"Akurasi {name}: {accuracy:.4f}")
 
-"""Berdasarkan visualisasi dan nilai akurasi pada ketiga model. Kita mendapatkan nilai tertinggi pada `Random Forest` dengan akurasi 94.61%.
+"""Berdasarkan visualisasi data diatas, terlihat bahwa model `Random Forest` memiliki performa terbaik pada `Accuracy`, `Precision`, `Recall`, dan `F1 Score` lalau jika dilihat dari nilai akurasinya memiliki nilai 94.78%.
 
 Selanjutnya kita uji prediksinya menggunakan beberapa nilai dalam data
 """
 
-# Uji data
-prediksi = X_test.iloc[:1].copy()
-pred_dict = {'y_true':y_test[:1]}
-for name, model in model_dict.items():
-    pred_dict['prediksi_'+name] = model.predict(prediksi).round(1)
+# Dictionary untuk mapping angka ke label cuaca
+weather_mapping = {0: 'Cloudy', 1: 'Rainy', 2: 'Snowy', 3: 'Sunny'}
 
+# Pilih data prediksi secara acak
+prediksi = X_test.sample(n=1, random_state=None).copy()  # n=1 untuk mengambil 1 baris secara acak
+
+# Ambil y_test yang sesuai dengan indeks yang dipilih
+y_true_sample = y_test.loc[prediksi.index]
+
+# Dictionary untuk menyimpan hasil prediksi dan nilai asli
+pred_dict = {'y_true': y_true_sample}
+
+# Loop melalui setiap model dan prediksi
+for name, model in model_dict.items():
+    # Prediksi hasil
+    pred = model.predict(prediksi).round().astype(int)  # Bulatkan dan ubah ke integer
+    # Ubah angka prediksi menjadi nama cuaca
+    pred_dict['prediksi_' + name] = [weather_mapping.get(p, 'Unknown') for p in pred]
+
+# Ubah y_true menjadi nama cuaca juga
+pred_dict['y_true'] = [weather_mapping.get(y, 'Unknown') for y in y_true_sample.round().astype(int)]
+
+# Tampilkan hasil dalam DataFrame
 pd.DataFrame(pred_dict)
 
 """Berdasarkan prediksinya juga, `Random forest` memiliki hasil prediksi terbaik"""
