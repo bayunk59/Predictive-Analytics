@@ -150,7 +150,7 @@ output:
 
 - Fitur CLoud Cover
 
-  ![uni1](https://github.com/user-attachments/assets/1c62f168-76d5-44a6-990a-c5b6bf59a5ff)
+  ![uni1](https://github.com/user-attachments/assets/eb54bde9-018c-4812-bd29-512a7e631bd7)
 
   Berdasarkan grafik pada fitur `Cloud Cover` di atas:
 
@@ -161,7 +161,7 @@ output:
 
 - Fitur Season
 
-  ![uni2](https://github.com/user-attachments/assets/f04c412d-3046-4e0d-9834-bb047958d5a7)
+  ![uni2](https://github.com/user-attachments/assets/89a79189-0ca8-4c7a-aa51-5ff1c5ce3347)
 
   Berdasarkan grafik pada fitur `Season` di atas:
 
@@ -173,7 +173,7 @@ output:
 
 - Fitur Location
 
-  ![uni3](https://github.com/user-attachments/assets/da112527-bf26-4cac-aeba-ccd6c6fbd05b)
+  ![uni3](https://github.com/user-attachments/assets/8c64caaf-f523-4d1a-9b46-f8e3d156f937)
 
   Berdasarkan grafik pada fitur `Location` di atas:
 
@@ -181,13 +181,23 @@ output:
   - `mountain` memiliki 4813 data
   - `coastal` memiliki 3571 data
 
+- Fitur Weather Type
+
+  ![uni4](https://github.com/user-attachments/assets/54c538c7-c9e4-4724-9716-01aa95a835d5)
+
+  Berdasarkan grafik pada fitur `Weather Type` di atas, nilai pada kolom ini terlihat seimbang dengan rincian sebagai berikut:
+- `Rainy` memiliki 3300 data
+- `Cluody` memiliki 3300 data
+- `Sunny` memiliki 3300 data
+- `Snowy` memiliki 3300 data
+
 #### Numerical Features
 
 Menampilkan data numerik dalam bentuk grafik
 
-![uni numerical](https://github.com/user-attachments/assets/a6a663b5-f533-4e42-a905-1040c13340c7)
+![uni numerical](https://github.com/user-attachments/assets/86aecae9-6efc-4857-998e-95d1963c7072)
 
-Berdasarkan grafik diatas, hampir semmua kolom skewnessnya mengarah ke kiri kecuali `Humidity` dan `Atmospheric Pressure`. Sedangkan untuk `Weather Type` datanya terlihat seimbang
+Berdasarkan grafik diatas, hampir semmua kolom skewnessnya mengarah ke kiri kecuali `Humidity`, `Precipitaion (%)` dan `Atmospheric Pressure`.
 
 ### Multivariate Analysis
 
@@ -198,62 +208,57 @@ Multivariate Analysis menunjukkan hubungan antara dua atau lebih variabel pada d
 Menampilkan hubungan fitur kategori dengan target `Weather Type`
 
 ```
-cat_features = cuaca.select_dtypes(include='object').columns.to_list()
-
-for col in cat_features:
-  sns.catplot(x=col, y="Weather Type", kind="bar", dodge=False, height = 4, aspect = 3,  data=cuaca, palette="Set3")
-  plt.title("Rata-rata 'Type Cuaca' Relatif terhadap - {}".format(col))
+for feature in categorical_features[:-1]:
+  plt.figure(figsize=(10, 6))
+  sns.countplot(x=feature, hue='Weather Type', data=cuaca)
+  plt.title(f'Hubungan {feature} dengan Weather Type')
+  plt.xlabel(feature)
+  plt.ylabel('Jumlah Data')
+  plt.legend(title='Weather Type')
+  plt.show()
 ```
 
 output:
 
 - Fitur `Cloud Cover` dengan `Weather Type`
-  ![multi 1](https://github.com/user-attachments/assets/8543201f-78c2-4345-a697-42e8f3f5a5cf)
+  ![multi 1](https://github.com/user-attachments/assets/87fc3e98-d64e-40e9-9e40-63b7ac6489c9)
 
 - Fitur `Season` dengan `Weather Type`
-  ![multi 2](https://github.com/user-attachments/assets/8469e1d3-f83c-49f8-b588-8418720e86db)
+  ![multi 2](https://github.com/user-attachments/assets/e5ddf0dc-65e4-4e3d-8855-658535b1614d)
 
 - Fitur `Location` dengan `Weather Type`
-  ![multi 3](https://github.com/user-attachments/assets/322d408a-3b8a-4df5-b087-127175edbf5a)
+  ![multi 3](https://github.com/user-attachments/assets/f6a32fd5-234f-4ae4-93f7-0550e2c9b371)
 
-berdasarkan data grafik di atas:
+Berdasarkan grafik di atas didapatn:
+-  Pada Fitur `Cloud Cover`
+  1. Pada `party cloudy` jumlah `Coudy` menjadi yang terbanyak hampir mendekati 2000 data
+  2. pada `Clear` semua nilainya diisi dengan tipe `Sunny`
+  3. pada `overccast` nilia terendahnya adda pada `Sunny` dan yang terbanyak adalah `Rainy` dan `Snowy`
+  4. pada `cludy`, hampr semua datanya rata
 
-1. Pada fitur 'Cloud Cover', ada perbedaan signifikan pada kategori clear yang menandakan adanya hubungan antara 'Cloud Cover' dengan 'Weather Type'
-2. Pada fitur 'Season', rata-rata Tipe cuaca yang muncul hampir sama di kisaran 1,2 - 1,6 menandakan hubungan 'Season' dengan 'Weather Type' rendah
-3. Pada fitur 'Location', rata-rata Tipe cuaca yang juga hampir mirip. Ini juga menandakan rendahnya hubungan antara fitur 'Location' dan 'Weather Type'
+- Pada fitur `Season`
+  1. pada `winter` jumlah `Snowy` menjadi yang paling besar melebihi 3000 data, sedangkan yang lain ada di bawah 1000 data
+  2. pada `Spring`, `Summer` dan `Autumn` datanya hampir rata antara 500 - 1000 data kecuali pada data `Snowy` yang jumlahnya sangat sedikit
+
+- Pada fitur `Location`
+  1. pada `inland` dan `mountain` jumlah datanya hampir sama dengan data tertinggi ada pada `Snowy`
+  2. Sedangkan pada `coastal`, data `Snowy` menjdai yang terendah dengan jumlah kurang dari 200 data
+
 
 #### Numerical Features
 
 Menampilkan hubungan antar fitur numerik dengan target `Weather Type`
 
 ```
-sns.pairplot(cuaca, diag_kind = 'kde')
+sns.pairplot(cuaca, hue='Weather Type')
+plt.show()
 ```
 
 output:
 
-![multi numerical](https://github.com/user-attachments/assets/451b0c8a-33e5-46b0-99c9-eb63b61db90d)
+![multi numerical](https://github.com/user-attachments/assets/ae924be0-0161-4275-a87b-ef70d05fba11)
 
 Berdasarkan visualisasi data diatas, tidak terlihat adanya hubungan yang signifikan antara fitur dengan target `Weather Type`
-
-Menampilkan nilai korelasi antar fitur dengan target `Weather Type`
-
-```
-# Mengetahui skor korelasi
-plt.figure(figsize=(10, 8))
-correlation_matrix = cuaca[numerical_features].corr().round(2)
-
-# Untuk menge-print nilai di dalam kotak, gunakan parameter anot=True
-sns.heatmap(data=correlation_matrix, annot=True, cmap='coolwarm', linewidths=0.5, )
-plt.title("Correlation Matrix untuk Fitur Numerik ", size=20)
-plt.tight_layout()
-```
-
-output:
-
-![korelasi](https://github.com/user-attachments/assets/075bd81c-e3a9-492b-acd9-a75562c64a69)
-
-Berdasarkan nilai korelasi di atas `Temperature`, `Atmospheric Pressure` dan `Visibilty (km)` adalah fitur yang mempunyai nilai korelasi paling kecil dengan target `Weather Type` dan akan di hapus
 
 ## Data Preparation
 
@@ -309,52 +314,70 @@ Outlier adalah titik data yang secara signifikan berada di sebgaian data dalam k
 
   Jumlah data terbaru sekarang adalah 11689 data
 
+### Mengubah Type Data
+
+Pada bagian ini, semua data kategorik akan diubah menjadi data numerik untuk mempermudah permodelan dan menentukan nilai uji korelasi antar fitur.
+
+- Mengubah data
+  ```
+  le = LabelEncoder()
+  cuaca['Cloud Cover'] = le.fit_transform(cuaca['Cloud Cover'])
+  cuaca['Location'] = le.fit_transform(cuaca['Location'])
+  cuaca['Season'] = le.fit_transform(cuaca['Season'])
+  cuaca['Weather Type'] = le.fit_transform(cuaca['Weather Type'])
+  cuaca.head()
+  ```
+
+  |      | Temperature | Humidity | Wind Speed | Precipitation (%) | Cloud Cover | Atmospheric Pressure | UV Index | Season | Visibility (km) | Location | Weather Type |
+|------|-------------|----------|------------|-------------------|-------------|----------------------|----------|--------|-----------------|----------|--------------|
+| 0    | 14.0        | 73       | 9.5        | 82.0              | 3           | 1010.82              | 2        | 3      | 3.5             | 1        | 1            |
+| 1    | 39.0        | 96       | 8.5        | 71.0              | 3           | 1011.43              | 7        | 1      | 10.0            | 1        | 0            |
+| 2    | 30.0        | 64       | 7.0        | 16.0              | 0           | 1018.72              | 5        | 1      | 5.5             | 2        | 3            |
+| 3    | 38.0        | 83       | 1.5        | 82.0              | 0           | 1026.25              | 7        | 1      | 1.0             | 0        | 3            |
+| 4    | 27.0        | 74       | 17.0       | 66.0              | 2           | 990.67               | 1        | 3      | 2.5             | 2        | 1            |
+
+ data kategorik sudah berhasil diubah menjadi data numerik
+
+ - Melakukan uji korelasi
+   ```
+    # Mengetahui skor korelasi
+    plt.figure(figsize=(10, 8))
+    correlation_matrix = cuaca.corr().round(2)
+
+    # Untuk menge-print nilai di dalam kotak, gunakan parameter anot=True
+    sns.heatmap(data=correlation_matrix, annot=True, cmap='coolwarm', linewidths=0.5, )
+    plt.title("Correlation Matrix untuk Fitur Numerik ", size=20)
+    plt.tight_layout()
+   ```
+
+   output:
+
+   ![korelasi](https://github.com/user-attachments/assets/901da1a1-4c83-409a-a41e-2478dd19e511)
+
+  Berdasarkan nilai korelasi di atas `Temperature`, `Visibilty (km)`, dan `Location` adalah fitur yang mempunyai nilai korelasi paling kecil dengan target `Weather Type` dan akan di hapus
+
+
 ### Hapus Kolom dengan Korelasi Terendah
 
 bagian ini adalah proses penghapusan fitur-fitur yang memiliki korelasi rendah terhadap variabel target dari dataset. Langkah ini diambil berdasarkan asumsi bahwa fitur dengan korelasi rendah tidak memberikan kontribusi signifikan terhadap prediksi yang dibuat oleh model.
 
 ```
-cuaca.drop(['Temperature', 'Atmospheric Pressure','Visibility (km)'], inplace=True, axis=1)
+cuaca.drop(['Temperature', 'Visibility (km)', 'Location'], inplace=True, axis=1)
 cuaca.head()
 ```
 
 output:
 
-|     | Humidity | Wind Speed | Precipitation (%) | Cloud Cover   | UV Index | Season | Location | Weather Type |
-| --- | -------- | ---------- | ----------------- | ------------- | -------- | ------ | -------- | ------------ |
-| 0   | 73       | 9.5        | 82.0              | partly cloudy | 2        | Winter | inland   | 1            |
-| 1   | 96       | 8.5        | 71.0              | partly cloudy | 7        | Spring | inland   | 0            |
-| 2   | 64       | 7.0        | 16.0              | clear         | 5        | Spring | mountain | 3            |
-| 3   | 83       | 1.5        | 82.0              | clear         | 7        | Spring | coastal  | 3            |
-| 4   | 74       | 17.0       | 66.0              | overcast      | 1        | Winter | mountain | 1            |
+|      | Humidity | Wind Speed | Precipitation (%) | Cloud Cover | Atmospheric Pressure | UV Index | Season | Weather Type |
+|------|----------|------------|-------------------|-------------|----------------------|----------|--------|--------------|
+| 0    | 73       | 9.5        | 82.0              | 3           | 1010.82              | 2        | 3      | 1            |
+| 1    | 96       | 8.5        | 71.0              | 3           | 1011.43              | 7        | 1      | 0            |
+| 2    | 64       | 7.0        | 16.0              | 0           | 1018.72              | 5        | 1      | 3            |
+| 3    | 83       | 1.5        | 82.0              | 0           | 1026.25              | 7        | 1      | 3            |
+| 4    | 74       | 17.0       | 66.0              | 2           | 990.67               | 1        | 3      | 1            |
 
-Penghapusan fitur `Temperature` , `Atmospheric Pressure` dan `Visibilty (km)` karena memiliki nilai korelasi yang rendah telah berhasil. Berdasarkan data terbaru, tersisa 8 kolom yakni 3 kategorik dan 5 numerik
 
-### Encoding Fitur Kategori
-
-Encoding fitu kategori adalah teknik yang umum dilakukan adalah teknik one-hot-encoding. Library scikit-learn menyediakan fungsi ini untuk mendapatkan fitur baru yang sesuai sehingga dapat mewakili variabel kategori. Terdapat tiga variabel kategori dalam dataset, yaitu `Cloud Cover`, `Season`, dan `Location`.
-
-Ubah data kategorik
-
-```
-cuaca = pd.concat([cuaca, pd.get_dummies(cuaca['Cloud Cover'], prefix='Cloud Cover')],axis=1)
-cuaca = pd.concat([cuaca, pd.get_dummies(cuaca['Season'], prefix='Season')],axis=1)
-cuaca = pd.concat([cuaca, pd.get_dummies(cuaca['Location'], prefix='Location')],axis=1)
-cuaca.drop(['Cloud Cover','Season','Location'], axis=1, inplace=True)
-cuaca.head()
-```
-
-output:
-
-| Humidity | Wind Speed | Precipitation (%) | Atmospheric Pressure | UV Index | Weather Type | Cloud Cover_clear | Cloud Cover_cloudy | Cloud Cover_overcast | Cloud Cover_partly cloudy | Season_Autumn | Season_Spring | Season_Summer | Season_Winter | Location_coastal | Location_inland | Location_mountain |
-| -------- | ---------- | ----------------- | -------------------- | -------- | ------------ | ----------------- | ------------------ | -------------------- | ------------------------- | ------------- | ------------- | ------------- | ------------- | ---------------- | --------------- | ----------------- |
-| 73       | 9.5        | 82.0              | 1010.82              | 2        | 1            | False             | False              | False                | True                      | False         | False         | False         | True          | False            | True            | False             |
-| 96       | 8.5        | 71.0              | 1011.43              | 7        | 0            | False             | False              | False                | True                      | False         | True          | False         | False         | False            | True            | False             |
-| 64       | 7.0        | 16.0              | 1018.72              | 5        | 3            | True              | False              | False                | False                     | False         | True          | False         | False         | False            | False           | True              |
-| 83       | 1.5        | 82.0              | 1026.25              | 7        | 3            | True              | False              | False                | False                     | False         | True          | False         | False         | True             | False           | False             |
-| 74       | 17.0       | 66.0              | 990.67               | 1        | 1            | False             | False              | True                 |
-
-Data kategorik berhasil diubah menggunakan teknik one-hot-encoding
+Penghapusan fitur `Temperature` ,`Visibilty (km)`, `Location` karena memiliki nilai korelasi yang rendah. Berdasarkan data terbaru, tersisa 8 kolom
 
 ### Train-Test-Split
 
@@ -380,7 +403,7 @@ StandardScaler melakukan proses standarisasi fitur dengan mengurangkan mean (nil
 Pada kasus ini kita hanya akan melakukan standarisai pada data latih, kemudian pada tahap evaluasi kita akan melakukan standarisasi pada data uji.
 
 ```
-numerical_features = ['Humidity', 'Wind Speed', 'Precipitation (%)', 'UV Index']
+numerical_features = ['Humidity', 'Wind Speed', 'Precipitation (%)', 'Cloud Cover', 'Atmospheric Pressure', 'UV Index', 'Season']
 scaler = StandardScaler()
 scaler.fit(X_train[numerical_features])
 X_train[numerical_features] = scaler.transform(X_train.loc[:, numerical_features])
@@ -388,13 +411,14 @@ X_train[numerical_features].head()
 ```
 
 output:
-| | Humidity | Wind Speed | Precipitation (%) | UV Index |
-|------|------------|------------|-------------------|-----------|
-| 5908 | -0.795473 | -1.373182 | -1.463063 | 0.658528 |
-| 2175 | 1.007657 | 0.315739 | 0.531440 | -0.728680 |
-| 621 | -0.589401 | -0.306495 | -1.120258 | -0.451238 |
-| 2363 | 1.059175 | -0.662057 | 1.092394 | 2.045736 |
-| 3887 | -1.671279 | -1.106510 | -1.182586 | 0.381087 |
+|      | Humidity   | Wind Speed | Precipitation (%) | Cloud Cover | Atmospheric Pressure | UV Index | Season   |
+|------|------------|------------|-------------------|-------------|----------------------|----------|----------|
+| 0    | -0.795473  | -1.373182  | -1.463063         | -1.919352   | 1.492121             | 0.658528 | -0.753285|
+| 1    | 1.007657   | 0.315739   | 0.531440          | 0.014708    | 0.757302             | -0.728680| 0.966641 |
+| 2    | -0.589401  | -0.306495  | -1.120258         | 0.014708    | 1.014102             | -0.451238| -1.613249|
+| 3    | 1.059175   | -0.662057  | 1.092394          | -1.919352   | 1.706378             | 2.045736 | 0.966641 |
+| 4    | -1.671279  | -1.106510  | -1.182586         | -1.919352   | 0.300168             | 0.381087 | 0.966641 |
+
 
 Mengecek nilai mean dan standar deviasi setelah proses standarisasi
 
@@ -404,16 +428,17 @@ X_train[numerical_features].describe().round(4)
 
 output:
 
-|       | Humidity   | Wind Speed | Precipitation (%) | UV Index   |
-| ----- | ---------- | ---------- | ----------------- | ---------- |
-| count | 10520.0000 | 10520.0000 | 10520.0000        | 10520.0000 |
-| mean  | 0.0000     | -0.0000    | -0.0000           | 0.0000     |
-| std   | 1.0000     | 1.0000     | 1.0000            | 1.0000     |
-| min   | -2.5471    | -1.6399    | -1.6189           | -1.0061    |
-| 25%   | -0.5379    | -0.7509    | -1.0579           | -0.7287    |
-| 50%   | 0.0288     | -0.1287    | 0.1263            | -0.4512    |
-| 75%   | 0.7501     | 0.7602     | 0.9054            | 0.6585     |
-| max   | 2.0380     | 2.9825     | 1.7780            | 2.8781     |
+|           | Humidity   | Wind Speed | Precipitation (%) | Cloud Cover | Atmospheric Pressure | UV Index | Season   |
+|-----------|------------|------------|-------------------|-------------|----------------------|----------|----------|
+| count     | 10520.0000 | 10520.0000 | 10520.0000        | 10520.0000  | 10520.0000           | 10520.0000| 10520.0000|
+| mean      | 0.0000     | -0.0000    | -0.0000           | -0.0000     | -0.0000              | 0.0000   | 0.0000   |
+| std       | 1.0000     | 1.0000     | 1.0000            | 1.0000      | 1.0000               | 1.0000   | 1.0000   |
+| min       | -2.5471    | -1.6399    | -1.6189           | -1.9194     | -3.3554              | -1.0061  | -1.6132  |
+| 25%       | -0.5379    | -0.7509    | -1.0579           | 0.0147      | -0.8084              | -0.7287  | -0.7533  |
+| 50%       | 0.0288     | -0.1287    | 0.1263            | 0.0147      | 0.1312               | -0.4512  | 0.1067   |
+| 75%       | 0.7501     | 0.7602     | 0.9054            | 0.9817      | 0.7751               | 0.6585   | 0.9666   |
+| max       | 2.0380     | 2.9825     | 1.7780            | 0.9817      | 3.3214               | 2.8781   | 0.9666   |
+
 
 Seperti yang disebutkan sebelumnya, proses ini akan mengubah nilai rata-rata (mean) menjadi 0 dan standar deviasi menjadi 1.
 
@@ -554,11 +579,12 @@ mse
 ```
 
 output:
-| | Train | Test |
-|-----------|-----------|-----------|
-| KNN | 0.00015 | 0.00019 |
-| RF | 0.000032 | 0.000131 |
-| Boosting | 0.000225 | 0.000236 |
+|           | Train      | Test       |
+|-----------|------------|------------|
+| KNN       | 0.000098   | 0.000131   |
+| RF        | 0.000018   | 0.000080   |
+| Boosting  | 0.000165   | 0.000177   |
+
 
 Untuk memudahkan, mari kita plot metrik tersebut dengan bar chart. Implementasikan kode di bawah ini:
 
@@ -566,10 +592,11 @@ Untuk memudahkan, mari kita plot metrik tersebut dengan bar chart. Implementasik
 fig, ax = plt.subplots()
 mse.sort_values(by='test', ascending=False).plot(kind='barh', ax=ax, zorder=3)
 ax.grid(zorder=0)
+plt.xticks(rotation=45)
 ```
 
 output:
-![grafik model](https://github.com/user-attachments/assets/6ca1b949-39e1-4ef3-b060-ce67dd053e63)
+![grafik model](https://github.com/user-attachments/assets/cdfcfee8-e189-4962-9042-e01d12513fa2)
 
 Selanjutnya kita akan melihat nilai akurasi di tiap model
 
@@ -588,11 +615,11 @@ for name, model in model_dict.items():
 
 output:
 
-`Akurasi KNN`: 0.8717
+`Akurasi KNN`: 0.9145
 
-`Akurasi RF`: 0.9213
+`Akurasi RF`: 0.9461
 
-`Akurasi Boosting`: 0.6878
+`Akurasi Boosting`: 0.9247
 
 Lalu Prediksi modelnya
 
@@ -607,9 +634,12 @@ pd.DataFrame(pred_dict)
 ```
 
 output:
-| | y_true | prediksi_KNN | prediksi_RF | prediksi_Boosting |
+|      | y_true | prediksi_KNN | prediksi_RF | prediksi_Boosting |
 |------|--------|--------------|-------------|-------------------|
-| 7259| 2| 1.9| 1.9| 1.5|
+| 7259 | 2      | 1.7          | 2.0         | 1.7               |
 
-Berdasarkan hasil akurasinya. permodelan menggunakan `K-Nearest Neighbors` mendapatkan nilai akurasi 87,17%, lalu permodelan dengan `Random Forest` mendapatkan akurasi 92,13% dan yang terakhir pada permodela `Boosting Algorithm` mendapatkan nilai akurasi 68,78%. Selain itu, hasil prediksi `K-Nearest Neighbors` dan `Random Forest` menjadi yang paling mendekati nilai sebenarnya.
+
+Berdasarkan hasil akurasinya. permodelan menggunakan `K-Nearest Neighbors` mendapatkan nilai akurasi 91,45%, lalu permodelan dengan `Random Forest` mendapatkan akurasi 94,61% dan yang terakhir pada permodela `Boosting Algorithm` mendapatkan nilai akurasi 92,47%. Selain itu, hasil prediksi `K-Nearest Neighbors` dan `Random Forest` menjadi yang paling mendekati nilai sebenarnya.
 Maka dari itu permodelan yang akan digunakan untuk mengklasifikasikan cuaca adalah model `Random Forest`, semoga dengan model ini bisa membantu menentukan klasifikasi cuaca yang terbaik sesuai data.
+
+
